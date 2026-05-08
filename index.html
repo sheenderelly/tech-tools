@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools</title>
+    <meta name="description" content="A simple collection of developer tools.">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>DevTools</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="category-header">Tools</div>
+                <ul class="nav-list">
+                    <li class="nav-item active" data-category="text">
+                        <span class="icon">Aa</span>
+                        <span class="label">TEXT</span>
+                    </li>
+                    <li class="nav-item" data-category="number">
+                        <span class="icon">#</span>
+                        <span class="label">NUMBER</span>
+                    </li>
+                    <li class="nav-item" data-category="ai">
+                        <span class="icon">✨</span>
+                        <span class="label">AI TOOLS</span>
+                    </li>
+                    <!-- Add more categories here in the future -->
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <!-- Tools Menu Area -->
+            <!-- Text Tools Menu Area -->
+            <div id="text-tools-menu" class="tools-menu view-active">
+                <h2 id="current-category-title-text">Text Tools</h2>
+                <div class="tools-grid" id="text-tools-grid">
+                    <div class="tool-card" data-tool="change-case">
+                        <div class="tool-icon">Aa</div>
+                        <div class="tool-details">
+                            <h3>Change Case</h3>
+                            <p>Convert text between different letter cases.</p>
+                        </div>
+                    </div>
+                    <!-- Kana Width Converter -->
+                    <div class="tool-card" data-tool="kana-width-converter">
+                        <div class="tool-icon">Ｗ</div>
+                        <div class="tool-details">
+                            <h3>Kana Width</h3>
+                            <p>Convert English letters and numbers to full-width or half-width.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number Tools Menu Area -->
+            <div id="number-tools-menu" class="tools-menu view-hidden">
+                <h2 id="current-category-title-number">Number Tools</h2>
+                <div class="tools-grid" id="number-tools-grid">
+                    <div class="tool-card" data-tool="phone-formatter">
+                        <div class="tool-icon">☎</div>
+                        <div class="tool-details">
+                            <h3>Phone</h3>
+                            <p>Format phone numbers with country codes and hyphens.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specific Tool View: Change Case -->
+            <div id="change-case-view" class="tool-view view-hidden">
+                <div class="view-header">
+                    <button class="back-btn" id="back-to-menu-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <h2>Change Case</h2>
+                </div>
+                
+                <div class="tool-body">
+                    <div class="action-buttons">
+                        <button class="action-btn" id="btn-uppercase">UPPERCASE</button>
+                        <button class="action-btn" id="btn-lowercase">lowercase</button>
+                        <button class="action-btn" id="btn-sentencecase">Sentence case</button>
+                    </div>
+                    <div class="textarea-container">
+                        <textarea id="case-input" placeholder="Type or paste your text here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specific Tool View: Kana Width Converter -->
+            <div id="kana-width-view" class="tool-view view-hidden">
+                <div class="view-header">
+                    <button class="back-btn" id="back-to-menu-btn-kana">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <h2>Kana Width Converter</h2>
+                </div>
+                
+                <div class="tool-body">
+                    <div class="action-buttons">
+                        <button class="action-btn" id="btn-to-full-width">To Full-width</button>
+                        <button class="action-btn" id="btn-to-half-width">To Half-width</button>
+                    </div>
+                    <div class="textarea-container">
+                        <textarea id="kana-input" placeholder="Type or paste your text here (letters, numbers, symbols, kana)..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specific Tool View: Phone Formatter -->
+            <div id="phone-formatter-view" class="tool-view view-hidden">
+                <div class="view-header">
+                    <button class="back-btn" id="back-to-menu-btn-phone">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <h2>Phone Formatter</h2>
+                </div>
+                
+                <div class="tool-body">
+                    <div class="controls-container">
+                        <div class="control-group">
+                            <label for="country-select">Country Selector</label>
+                            <select id="country-select">
+                                <option value="JP">Japan (JP) +81</option>
+                                <option value="PH">Philippines (PH) +63</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Format Options</label>
+                            <div class="toggle-badges">
+                                <button class="badge-toggle" id="toggle-country-code">Include Country Code</button>
+                                <button class="badge-toggle" id="toggle-hyphens">Use Hyphens</button>
+                                <button class="badge-toggle" id="toggle-spaces">Use Space</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="side-by-side-container">
+                        <div class="textarea-container input-container">
+                            <label for="phone-input">Raw Number(s)</label>
+                            <textarea id="phone-input" placeholder="e.g. 08080069955&#10;09012345678" rows="8"></textarea>
+                        </div>
+                        <div class="textarea-container output-container">
+                            <div class="output-header">
+                                <label for="phone-output">Formatted Result</label>
+                                <button class="copy-btn" id="btn-copy-phone">Copy All</button>
+                            </div>
+                            <textarea id="phone-output" readonly placeholder="Results will appear here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Tools Menu Area -->
+            <div id="ai-tools-menu" class="tools-menu view-hidden">
+                <h2 id="current-category-title-ai">AI Tools</h2>
+                <div class="tools-grid" id="ai-tools-grid">
+                    <div class="tool-card" data-tool="clean-prompt">
+                        <div class="tool-icon">✨</div>
+                        <div class="tool-details">
+                            <h3>Clean Prompt</h3>
+                            <p>Refine and structure your prompts using AI Models.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specific Tool View: Clean Prompt -->
+            <div id="clean-prompt-view" class="tool-view view-hidden">
+                <div class="view-header">
+                    <button class="back-btn" id="back-to-menu-btn-ai">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <h2>Clean Prompt</h2>
+                </div>
+                
+                <div class="tool-body">
+                    <div class="controls-container">
+                        <div class="control-group">
+                            <label for="ai-model-select">AI Model</label>
+                            <select id="ai-model-select">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            </select>
+                        </div>
+                        <div class="control-group" style="flex: 1;">
+                            <label for="gemini-api-key">Google Gemini API Key (Optional)</label>
+                            <input type="password" id="gemini-api-key" placeholder="Enter API Key (Saved locally in your browser)" class="api-key-input">
+                        </div>
+                        <div class="control-group">
+                            <label>Status</label>
+                            <div class="toggle-badges">
+                                <button class="badge-toggle" id="toggle-api-key-active">Use API Key</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="side-by-side-container">
+                        <div class="textarea-container input-container">
+                            <label for="prompt-input">Original Prompt</label>
+                            <textarea id="prompt-input" placeholder="Enter your raw prompt idea here..."></textarea>
+                        </div>
+                        <div class="textarea-container output-container">
+                            <div class="output-header">
+                                <label for="prompt-output">Cleaned Prompt</label>
+                                <button class="copy-btn" id="btn-copy-prompt">Copy</button>
+                            </div>
+                            <textarea id="prompt-output" readonly placeholder="Refined prompt will appear here..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons submit-actions">
+                        <button class="action-btn primary-btn" id="btn-clean-prompt">✨ Clean Prompt</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
