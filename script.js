@@ -30,39 +30,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const regKana = new RegExp(Object.keys(kanaMap).sort((a,b) => b.length - a.length).join('|'), 'g');
     const regRevKana = new RegExp(Object.keys(revKanaMap).join('|'), 'g');
 
-    // DOM Elements
+    // DOM Elements - Menus
     const textToolsMenu = document.getElementById('text-tools-menu');
     const numberToolsMenu = document.getElementById('number-tools-menu');
-    const aiToolsMenu = document.getElementById('ai-tools-menu');
+    const jsonToolsMenu = document.getElementById('json-tools-menu');
     
+    // Default starting menu
     let currentMenu = textToolsMenu;
 
+    // Sidebar
     const navItems = document.querySelectorAll('.nav-item');
 
+    // Text Tool Views & Elements
     const changeCaseView = document.getElementById('change-case-view');
-    const backBtn = document.getElementById('back-to-menu-btn');
     const changeCaseCard = document.querySelector('[data-tool="change-case"]');
-    
-    // Change Case Tools Elements
     const caseInput = document.getElementById('case-input');
     const btnUppercase = document.getElementById('btn-uppercase');
     const btnLowercase = document.getElementById('btn-lowercase');
     const btnSentencecase = document.getElementById('btn-sentencecase');
 
-    // Kana Width Tools Elements
     const kanaWidthView = document.getElementById('kana-width-view');
     const kanaWidthCard = document.querySelector('[data-tool="kana-width-converter"]');
-    const backBtnKana = document.getElementById('back-to-menu-btn-kana');
-    
     const kanaInput = document.getElementById('kana-input');
     const btnToFullWidth = document.getElementById('btn-to-full-width');
     const btnToHalfWidth = document.getElementById('btn-to-half-width');
 
-    // Phone Formatter Tools Elements
+    // Number Tool Views & Elements
     const phoneFormatterView = document.getElementById('phone-formatter-view');
     const phoneFormatterCard = document.querySelector('[data-tool="phone-formatter"]');
-    const backBtnPhone = document.getElementById('back-to-menu-btn-phone');
-    
     const phoneInput = document.getElementById('phone-input');
     const countrySelect = document.getElementById('country-select');
     const toggleCountryCode = document.getElementById('toggle-country-code');
@@ -71,12 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneOutput = document.getElementById('phone-output');
     const btnCopyPhone = document.getElementById('btn-copy-phone');
 
-    // JSON Tools Elements
+    // JSON Tool Views & Elements
     const jsonEditorView = document.getElementById('json-editor-view');
     const jsonEditorCard = document.querySelector('[data-tool="json-editor"]');
-    const backBtnJson = document.getElementById('back-to-menu-btn-json');
-    const jsonToolsMenu = document.getElementById('json-tools-menu');
-    
     const jsonInput = document.getElementById('json-input');
     const jsonOutput = document.getElementById('json-output');
     const jsonTable = document.getElementById('json-table');
@@ -86,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAddRow = document.getElementById('btn-add-row');
     const btnCopyJson = document.getElementById('btn-copy-json');
 
+    // Back Buttons
+    const backBtns = document.querySelectorAll('.back-btn');
+
     // Phone format state
     let phoneState = {
         hasCode: false,
@@ -93,9 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
         hasSpace: false
     };
 
-    // Navigation Logic
+    /**
+     * Navigation helper to show a specific view and hide all others
+     */
     function showView(viewElement) {
-        // Hide all views globally
+        if (!viewElement) return;
+        
+        // Hide all views and menus
         document.querySelectorAll('.tools-menu, .tool-view').forEach(el => {
             el.classList.remove('view-active');
             el.classList.add('view-hidden');
@@ -106,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         viewElement.classList.add('view-active');
     }
 
-    // Sidebar Navigation
+    // Sidebar Category Switcher
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             navItems.forEach(nav => nav.classList.remove('active'));
@@ -125,254 +124,197 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Event Listeners for Navigation
-    changeCaseCard.addEventListener('click', () => {
-        showView(changeCaseView);
-        caseInput.focus();
+    // Tool Card Click Listeners (Go to specific tool view)
+    if (changeCaseCard) {
+        changeCaseCard.addEventListener('click', () => {
+            showView(changeCaseView);
+            if (caseInput) caseInput.focus();
+        });
+    }
+
+    if (kanaWidthCard) {
+        kanaWidthCard.addEventListener('click', () => {
+            showView(kanaWidthView);
+            if (kanaInput) kanaInput.focus();
+        });
+    }
+
+    if (phoneFormatterCard) {
+        phoneFormatterCard.addEventListener('click', () => {
+            showView(phoneFormatterView);
+            if (phoneInput) phoneInput.focus();
+        });
+    }
+
+    if (jsonEditorCard) {
+        jsonEditorCard.addEventListener('click', () => {
+            showView(jsonEditorView);
+            if (jsonInput) jsonInput.focus();
+        });
+    }
+
+    // Universal Back Button logic
+    backBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            showView(currentMenu);
+        });
     });
 
-    backBtn.addEventListener('click', () => {
-        showView(currentMenu);
-    });
+    // --- Tool Logics ---
 
-    kanaWidthCard.addEventListener('click', () => {
-        showView(kanaWidthView);
-        kanaInput.focus();
-    });
+    // 1. Change Case Tool
+    if (btnUppercase) {
+        btnUppercase.addEventListener('click', () => {
+            if (caseInput) caseInput.value = caseInput.value.toUpperCase();
+        });
+    }
+    if (btnLowercase) {
+        btnLowercase.addEventListener('click', () => {
+            if (caseInput) caseInput.value = caseInput.value.toLowerCase();
+        });
+    }
+    if (btnSentencecase) {
+        btnSentencecase.addEventListener('click', () => {
+            if (caseInput) {
+                caseInput.value = caseInput.value.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
+            }
+        });
+    }
 
-    backBtnKana.addEventListener('click', () => {
-        showView(currentMenu);
-    });
+    // 2. Kana Width Tool
+    if (btnToFullWidth) {
+        btnToFullWidth.addEventListener('click', () => {
+            const text = kanaInput.value;
+            if (text) {
+                let result = text.replace(/[!-~]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFEE0)).replace(/ /g, '\u3000');
+                kanaInput.value = result.replace(regKana, match => kanaMap[match]);
+            }
+        });
+    }
+    if (btnToHalfWidth) {
+        btnToHalfWidth.addEventListener('click', () => {
+            const text = kanaInput.value;
+            if (text) {
+                let result = text.replace(/[\uFF01-\uFF5E]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/\u3000/g, ' ');
+                kanaInput.value = result.replace(regRevKana, match => revKanaMap[match]);
+            }
+        });
+    }
 
-    phoneFormatterCard.addEventListener('click', () => {
-        showView(phoneFormatterView);
-        phoneInput.focus();
-    });
-
-    backBtnPhone.addEventListener('click', () => {
-        showView(currentMenu);
-    });
-
-    jsonEditorCard.addEventListener('click', () => {
-        showView(jsonEditorView);
-        jsonInput.focus();
-    });
-
-    backBtnJson.addEventListener('click', () => {
-        showView(currentMenu);
-    });
-
-    // Change Case Tool Logic
-    btnUppercase.addEventListener('click', () => {
-        const text = caseInput.value;
-        if (text) {
-            caseInput.value = text.toUpperCase();
-        }
-    });
-
-    btnLowercase.addEventListener('click', () => {
-        const text = caseInput.value;
-        if (text) {
-            caseInput.value = text.toLowerCase();
-        }
-    });
-
-    btnSentencecase.addEventListener('click', () => {
-        const text = caseInput.value;
-        if (text) {
-            // Simple sentence case: capitalize first letter of string
-            // and first letter after every period, question mark, or exclamation point.
-            caseInput.value = text.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, function(c) {
-                return c.toUpperCase();
-            });
-        }
-    });
-
-    // Kana Width Tool Logic
-    btnToFullWidth.addEventListener('click', () => {
-        const text = kanaInput.value;
-        if (text) {
-            // Convert standard ASCII characters to Full-width equivalents (+0xFEE0)
-            // Space (0x0020) becomes Ideographic Space (0x3000)
-            let result = text.replace(/[!-~]/g, function(char) {
-                return String.fromCharCode(char.charCodeAt(0) + 0xFEE0);
-            }).replace(/ /g, '\u3000');
-            
-            // Convert Half-width Kana to Full-width Kana
-            kanaInput.value = result.replace(regKana, function(match) {
-                return kanaMap[match];
-            });
-        }
-    });
-
-    btnToHalfWidth.addEventListener('click', () => {
-        const text = kanaInput.value;
-        if (text) {
-            // Convert Full-width variants to standard ASCII characters (-0xFEE0)
-            // Ideographic Space (0x3000) becomes Space (0x0020)
-            let result = text.replace(/[\uFF01-\uFF5E]/g, function(char) {
-                return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
-            }).replace(/\u3000/g, ' ');
-
-            // Convert Full-width Kana to Half-width Kana
-            kanaInput.value = result.replace(regRevKana, function(match) {
-                return revKanaMap[match];
-            });
-        }
-    });
-
-    // Phone Formatter Tool Logic
+    // 3. Phone Formatter Tool
     function formatSingleNumber(num, country) {
         let clean = num.replace(/[\s-]/g, '');
         if (!clean) return '';
-
         const { hasCode, hasHyphen, hasSpace } = phoneState;
-        
         let prefix = '';
         let separator = hasHyphen ? '-' : (hasSpace ? ' ' : '');
-
         if (country === 'JP') {
-            if (hasCode && clean.startsWith('0')) {
-                clean = clean.substring(1);
-            }
-
+            if (hasCode && clean.startsWith('0')) clean = clean.substring(1);
             if (hasHyphen || hasSpace) {
-                // Formatting for Japanese mobile (11-digit) and standard telephone (10-digit)
-                if (hasCode && clean.length === 10) {
-                    clean = clean.replace(/(\d{2})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
-                } else if (!hasCode && clean.length === 11) {
-                    clean = clean.replace(/(\d{3})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
-                } else if (hasCode && clean.length === 9) {
-                    clean = clean.replace(/(\d{1})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
-                } else if (!hasCode && clean.length === 10) {
-                    clean = clean.replace(/(\d{2})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
-                }
+                if (hasCode && clean.length === 10) clean = clean.replace(/(\d{2})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
+                else if (!hasCode && clean.length === 11) clean = clean.replace(/(\d{3})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
+                else if (hasCode && clean.length === 9) clean = clean.replace(/(\d{1})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
+                else if (!hasCode && clean.length === 10) clean = clean.replace(/(\d{2})(\d{4})(\d{4})/, `$1${separator}$2${separator}$3`);
             }
             if (hasCode) prefix = '+81' + separator;
         } else if (country === 'PH') {
-            if (hasCode && clean.startsWith('0')) {
-                clean = clean.substring(1);
-            }
-
+            if (hasCode && clean.startsWith('0')) clean = clean.substring(1);
             if (hasHyphen || hasSpace) {
-                // Formatting for PH mobile style XXX-XXX-XXXX
-                if (hasCode && clean.length === 10) {
-                    clean = clean.replace(/(\d{3})(\d{3})(\d{4})/, `$1${separator}$2${separator}$3`);
-                } else if (!hasCode && clean.length === 11) {
-                    clean = clean.replace(/(\d{4})(\d{3})(\d{4})/, `$1${separator}$2${separator}$3`);
-                }
+                if (hasCode && clean.length === 10) clean = clean.replace(/(\d{3})(\d{3})(\d{4})/, `$1${separator}$2${separator}$3`);
+                else if (!hasCode && clean.length === 11) clean = clean.replace(/(\d{4})(\d{3})(\d{4})/, `$1${separator}$2${separator}$3`);
             }
             if (hasCode) prefix = '+63' + separator;
         }
-
         return prefix + clean;
     }
 
     function updatePhoneFormat() {
+        if (!phoneInput || !phoneOutput) return;
         const rawText = phoneInput.value;
         const country = countrySelect.value;
-        
-        if (!rawText.trim()) {
-            phoneOutput.value = '';
-            return;
-        }
-
-        const lines = rawText.split('\n');
-        const formattedLines = lines.map(line => formatSingleNumber(line, country));
-        
-        phoneOutput.value = formattedLines.join('\n');
+        if (!rawText.trim()) { phoneOutput.value = ''; return; }
+        phoneOutput.value = rawText.split('\n').map(line => formatSingleNumber(line, country)).join('\n');
     }
 
     [toggleCountryCode, toggleHyphens, toggleSpaces].forEach(toggle => {
+        if (!toggle) return;
         toggle.addEventListener('click', (e) => {
             const btn = e.target;
             btn.classList.toggle('active');
-            
             if (btn === toggleCountryCode) phoneState.hasCode = btn.classList.contains('active');
             if (btn === toggleHyphens) {
                 phoneState.hasHyphen = btn.classList.contains('active');
-                if (phoneState.hasHyphen) {
-                    phoneState.hasSpace = false;
-                    toggleSpaces.classList.remove('active');
-                }
+                if (phoneState.hasHyphen) { phoneState.hasSpace = false; toggleSpaces.classList.remove('active'); }
             }
             if (btn === toggleSpaces) {
                 phoneState.hasSpace = btn.classList.contains('active');
-                if (phoneState.hasSpace) {
-                    phoneState.hasHyphen = false;
-                    toggleHyphens.classList.remove('active');
-                }
+                if (phoneState.hasSpace) { phoneState.hasHyphen = false; toggleHyphens.classList.remove('active'); }
             }
             updatePhoneFormat();
         });
     });
 
     [phoneInput, countrySelect].forEach(el => {
-        el.addEventListener('input', updatePhoneFormat);
-        el.addEventListener('change', updatePhoneFormat);
-    });
-
-    btnCopyPhone.addEventListener('click', () => {
-        const textToCopy = phoneOutput.value;
-        if (textToCopy) {
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btnCopyPhone.textContent;
-                btnCopyPhone.textContent = 'Copied!';
-                setTimeout(() => {
-                    btnCopyPhone.textContent = originalText;
-                }, 2000);
-            });
+        if (el) {
+            el.addEventListener('input', updatePhoneFormat);
+            el.addEventListener('change', updatePhoneFormat);
         }
     });
 
-    // JSON Editor Tool Logic
+    if (btnCopyPhone) {
+        btnCopyPhone.addEventListener('click', () => {
+            const textToCopy = phoneOutput.value;
+            if (textToCopy) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = btnCopyPhone.textContent;
+                    btnCopyPhone.textContent = 'Copied!';
+                    setTimeout(() => { btnCopyPhone.textContent = originalText; }, 2000);
+                });
+            }
+        });
+    }
+
+    // 4. JSON Editor Tool
     let currentJsonData = null;
 
-    btnFormatJson.addEventListener('click', () => {
-        try {
-            const text = jsonInput.value.trim();
-            if (!text) return;
-            const json = JSON.parse(text);
-            jsonInput.value = JSON.stringify(json, null, 4);
-        } catch (e) {
-            alert('Invalid JSON format');
-        }
-    });
+    if (btnFormatJson) {
+        btnFormatJson.addEventListener('click', () => {
+            try {
+                const text = jsonInput.value.trim();
+                if (!text) return;
+                jsonInput.value = JSON.stringify(JSON.parse(text), null, 4);
+            } catch (e) { alert('Invalid JSON format'); }
+        });
+    }
 
-    btnVisualizeJson.addEventListener('click', () => {
-        try {
-            const text = jsonInput.value.trim();
-            if (!text) return;
-            currentJsonData = JSON.parse(text);
-            renderJsonTable();
-            jsonVisualizerContainer.classList.remove('view-hidden');
-            updateJsonOutput();
-        } catch (e) {
-            alert('Error parsing JSON: ' + e.message);
-        }
-    });
+    if (btnVisualizeJson) {
+        btnVisualizeJson.addEventListener('click', () => {
+            try {
+                const text = jsonInput.value.trim();
+                if (!text) return;
+                currentJsonData = JSON.parse(text);
+                renderJsonTable();
+                if (jsonVisualizerContainer) jsonVisualizerContainer.classList.remove('view-hidden');
+                updateJsonOutput();
+            } catch (e) { alert('Error parsing JSON: ' + e.message); }
+        });
+    }
 
     function renderJsonTable() {
+        if (!jsonTable || !currentJsonData) return;
         jsonTable.innerHTML = '';
-        if (!currentJsonData) return;
-
         let dataArray = Array.isArray(currentJsonData) ? currentJsonData : [currentJsonData];
         if (dataArray.length === 0) {
             jsonTable.innerHTML = '<tr><td>No data available</td></tr>';
             return;
         }
 
-        // Get all unique keys for header
         let keys = new Set();
         dataArray.forEach(item => {
-            if (typeof item === 'object' && item !== null) {
-                Object.keys(item).forEach(k => keys.add(k));
-            }
+            if (typeof item === 'object' && item !== null) Object.keys(item).forEach(k => keys.add(k));
         });
-        
         const keyList = Array.from(keys);
         
-        // Header
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         keyList.forEach(key => {
@@ -386,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         thead.appendChild(headerRow);
         jsonTable.appendChild(thead);
 
-        // Body
         const tbody = document.createElement('tbody');
         dataArray.forEach((item, index) => {
             const tr = document.createElement('tr');
@@ -396,18 +337,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.className = 'table-input';
                 input.value = (item[key] !== undefined) ? item[key] : '';
                 input.addEventListener('input', (e) => {
-                    if (Array.isArray(currentJsonData)) {
-                        currentJsonData[index][key] = e.target.value;
-                    } else {
-                        currentJsonData[key] = e.target.value;
-                    }
+                    if (Array.isArray(currentJsonData)) currentJsonData[index][key] = e.target.value;
+                    else currentJsonData[key] = e.target.value;
                     updateJsonOutput();
                 });
                 td.appendChild(input);
                 tr.appendChild(td);
             });
 
-            // Remove Button
             const actionTd = document.createElement('td');
             if (Array.isArray(currentJsonData)) {
                 const removeBtn = document.createElement('button');
@@ -426,38 +363,35 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonTable.appendChild(tbody);
     }
 
-    btnAddRow.addEventListener('click', () => {
-        if (!currentJsonData) {
-            currentJsonData = [{}];
-        } else if (!Array.isArray(currentJsonData)) {
-            currentJsonData = [currentJsonData, {}];
-        } else {
-            const newItem = {};
-            if (currentJsonData.length > 0) {
-                Object.keys(currentJsonData[0]).forEach(k => newItem[k] = "");
+    if (btnAddRow) {
+        btnAddRow.addEventListener('click', () => {
+            if (!currentJsonData) currentJsonData = [{}];
+            else if (!Array.isArray(currentJsonData)) currentJsonData = [currentJsonData, {}];
+            else {
+                const newItem = {};
+                if (currentJsonData.length > 0) Object.keys(currentJsonData[0]).forEach(k => newItem[k] = "");
+                currentJsonData.push(newItem);
             }
-            currentJsonData.push(newItem);
-        }
-        renderJsonTable();
-        updateJsonOutput();
-    });
+            renderJsonTable();
+            updateJsonOutput();
+        });
+    }
 
     function updateJsonOutput() {
-        if (currentJsonData) {
+        if (currentJsonData && jsonOutput) {
             jsonOutput.value = JSON.stringify(currentJsonData, null, 4);
         }
     }
 
-    btnCopyJson.addEventListener('click', () => {
-        if (jsonOutput.value) {
-            navigator.clipboard.writeText(jsonOutput.value).then(() => {
-                const originalText = btnCopyJson.textContent;
-                btnCopyJson.textContent = 'Copied!';
-                setTimeout(() => {
-                    btnCopyJson.textContent = originalText;
-                }, 2000);
-            });
-        }
-    });
+    if (btnCopyJson) {
+        btnCopyJson.addEventListener('click', () => {
+            if (jsonOutput && jsonOutput.value) {
+                navigator.clipboard.writeText(jsonOutput.value).then(() => {
+                    const originalText = btnCopyJson.textContent;
+                    btnCopyJson.textContent = 'Copied!';
+                    setTimeout(() => { btnCopyJson.textContent = originalText; }, 2000);
+                });
+            }
+        });
+    }
 });
-
