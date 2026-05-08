@@ -71,18 +71,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneOutput = document.getElementById('phone-output');
     const btnCopyPhone = document.getElementById('btn-copy-phone');
 
-    // AI Tools Elements
-    const cleanPromptView = document.getElementById('clean-prompt-view');
-    const cleanPromptCard = document.querySelector('[data-tool="clean-prompt"]');
-    const backBtnAi = document.getElementById('back-to-menu-btn-ai');
+    // JSON Tools Elements
+    const jsonEditorView = document.getElementById('json-editor-view');
+    const jsonEditorCard = document.querySelector('[data-tool="json-editor"]');
+    const backBtnJson = document.getElementById('back-to-menu-btn-json');
+    const jsonToolsMenu = document.getElementById('json-tools-menu');
     
-    const aiModelSelect = document.getElementById('ai-model-select');
-    const geminiApiKeyInput = document.getElementById('gemini-api-key');
-    const toggleApiKeyActive = document.getElementById('toggle-api-key-active');
-    const promptInput = document.getElementById('prompt-input');
-    const promptOutput = document.getElementById('prompt-output');
-    const btnCleanPrompt = document.getElementById('btn-clean-prompt');
-    const btnCopyPrompt = document.getElementById('btn-copy-prompt');
+    const jsonInput = document.getElementById('json-input');
+    const jsonOutput = document.getElementById('json-output');
+    const jsonTable = document.getElementById('json-table');
+    const jsonVisualizerContainer = document.getElementById('json-visualizer-container');
+    const btnVisualizeJson = document.getElementById('btn-visualize-json');
+    const btnFormatJson = document.getElementById('btn-format-json');
+    const btnAddRow = document.getElementById('btn-add-row');
+    const btnCopyJson = document.getElementById('btn-copy-json');
 
     // Phone format state
     let phoneState = {
@@ -115,8 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentMenu = textToolsMenu;
             } else if (category === 'number') {
                 currentMenu = numberToolsMenu;
-            } else if (category === 'ai') {
-                currentMenu = aiToolsMenu;
+            } else if (category === 'json') {
+                currentMenu = jsonToolsMenu;
             }
             
             showView(currentMenu);
@@ -151,12 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
         showView(currentMenu);
     });
 
-    cleanPromptCard.addEventListener('click', () => {
-        showView(cleanPromptView);
-        promptInput.focus();
+    jsonEditorCard.addEventListener('click', () => {
+        showView(jsonEditorView);
+        jsonInput.focus();
     });
 
-    backBtnAi.addEventListener('click', () => {
+    backBtnJson.addEventListener('click', () => {
         showView(currentMenu);
     });
 
@@ -323,117 +325,139 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Clean Prompt Tool Logic
+    // JSON Editor Tool Logic
+    let currentJsonData = null;
 
-    // Load AI settings from local storage
-    let aiSettings = {
-        apiKey: localStorage.getItem('geminiApiKey') || '',
-        useKey: localStorage.getItem('useGeminiApiKey') === 'true',
-        model: localStorage.getItem('aiModel') || 'gemini-2.5-flash'
-    };
-
-    if (aiModelSelect) {
-        aiModelSelect.value = aiSettings.model;
-        aiModelSelect.addEventListener('change', (e) => {
-            aiSettings.model = e.target.value;
-            localStorage.setItem('aiModel', aiSettings.model);
-        });
-    }
-
-    if (aiSettings.apiKey) {
-        geminiApiKeyInput.value = aiSettings.apiKey;
-    }
-    if (aiSettings.useKey) {
-        toggleApiKeyActive.classList.add('active');
-    }
-
-    geminiApiKeyInput.addEventListener('input', (e) => {
-        aiSettings.apiKey = e.target.value;
-        localStorage.setItem('geminiApiKey', aiSettings.apiKey);
-    });
-
-    toggleApiKeyActive.addEventListener('click', () => {
-        toggleApiKeyActive.classList.toggle('active');
-        aiSettings.useKey = toggleApiKeyActive.classList.contains('active');
-        localStorage.setItem('useGeminiApiKey', aiSettings.useKey);
-    });
-
-    btnCleanPrompt.addEventListener('click', async () => {
-        const text = promptInput.value.trim();
-        if (!text) {
-            alert('Please enter a prompt to clean.');
-            return;
-        }
-
-        if (aiSettings.useKey && !aiSettings.apiKey) {
-            alert('Please provide a Google Gemini API Key or disable Use API Key.');
-            return;
-        }
-
-        btnCleanPrompt.disabled = true;
-        btnCleanPrompt.textContent = '✨ Cleaning...';
-        promptOutput.value = 'Waiting for response from Gemini...';
-
-        const systemPrompt = `You are an expert prompt engineer. The user will provide a raw prompt idea. Your task is to rewrite it to be highly structured, clear, and easy for an AI model to follow.
-Do not deviate from the user's original idea, but structure it better.
-Output ONLY the rewritten prompt.`;
-
+    btnFormatJson.addEventListener('click', () => {
         try {
-            const modelName = aiSettings.model || 'gemini-2.5-flash';
-            let url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`;
-            if (aiSettings.useKey && aiSettings.apiKey) {
-                url += `?key=${aiSettings.apiKey}`;
+            const text = jsonInput.value.trim();
+            if (!text) return;
+            const json = JSON.parse(text);
+            jsonInput.value = JSON.stringify(json, null, 4);
+        } catch (e) {
+            alert('Invalid JSON format');
+        }
+    });
+
+    btnVisualizeJson.addEventListener('click', () => {
+        try {
+            const text = jsonInput.value.trim();
+            if (!text) return;
+            currentJsonData = JSON.parse(text);
+            renderJsonTable();
+            jsonVisualizerContainer.classList.remove('view-hidden');
+            updateJsonOutput();
+        } catch (e) {
+            alert('Error parsing JSON: ' + e.message);
+        }
+    });
+
+    function renderJsonTable() {
+        jsonTable.innerHTML = '';
+        if (!currentJsonData) return;
+
+        let dataArray = Array.isArray(currentJsonData) ? currentJsonData : [currentJsonData];
+        if (dataArray.length === 0) {
+            jsonTable.innerHTML = '<tr><td>No data available</td></tr>';
+            return;
+        }
+
+        // Get all unique keys for header
+        let keys = new Set();
+        dataArray.forEach(item => {
+            if (typeof item === 'object' && item !== null) {
+                Object.keys(item).forEach(k => keys.add(k));
             }
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: systemPrompt + "\n\nUser Input: " + text }
-                        ]
-                    }],
-                    generationConfig: {
-                        temperature: 0.3
+        });
+        
+        const keyList = Array.from(keys);
+        
+        // Header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        keyList.forEach(key => {
+            const th = document.createElement('th');
+            th.textContent = key;
+            headerRow.appendChild(th);
+        });
+        const actionTh = document.createElement('th');
+        actionTh.textContent = '';
+        headerRow.appendChild(actionTh);
+        thead.appendChild(headerRow);
+        jsonTable.appendChild(thead);
+
+        // Body
+        const tbody = document.createElement('tbody');
+        dataArray.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            keyList.forEach(key => {
+                const td = document.createElement('td');
+                const input = document.createElement('input');
+                input.className = 'table-input';
+                input.value = (item[key] !== undefined) ? item[key] : '';
+                input.addEventListener('input', (e) => {
+                    if (Array.isArray(currentJsonData)) {
+                        currentJsonData[index][key] = e.target.value;
+                    } else {
+                        currentJsonData[key] = e.target.value;
                     }
-                })
+                    updateJsonOutput();
+                });
+                td.appendChild(input);
+                tr.appendChild(td);
             });
 
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error?.message || 'Failed to fetch from Gemini API');
+            // Remove Button
+            const actionTd = document.createElement('td');
+            if (Array.isArray(currentJsonData)) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn-remove-row';
+                removeBtn.innerHTML = '×';
+                removeBtn.addEventListener('click', () => {
+                    currentJsonData.splice(index, 1);
+                    renderJsonTable();
+                    updateJsonOutput();
+                });
+                actionTd.appendChild(removeBtn);
             }
+            tr.appendChild(actionTd);
+            tbody.appendChild(tr);
+        });
+        jsonTable.appendChild(tbody);
+    }
 
-            const data = await response.json();
-            const cleanedPrompt = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-            if (cleanedPrompt) {
-                promptOutput.value = cleanedPrompt.trim();
-            } else {
-                promptOutput.value = 'Received an unexpected response format from the API.';
+    btnAddRow.addEventListener('click', () => {
+        if (!currentJsonData) {
+            currentJsonData = [{}];
+        } else if (!Array.isArray(currentJsonData)) {
+            currentJsonData = [currentJsonData, {}];
+        } else {
+            const newItem = {};
+            if (currentJsonData.length > 0) {
+                Object.keys(currentJsonData[0]).forEach(k => newItem[k] = "");
             }
-
-        } catch (error) {
-            console.error('Gemini API Error:', error);
-            promptOutput.value = `Error: ${error.message}`;
-        } finally {
-            btnCleanPrompt.disabled = false;
-            btnCleanPrompt.textContent = '✨ Clean Prompt';
+            currentJsonData.push(newItem);
         }
+        renderJsonTable();
+        updateJsonOutput();
     });
 
-    btnCopyPrompt.addEventListener('click', () => {
-        const textToCopy = promptOutput.value;
-        if (textToCopy && !textToCopy.startsWith('Error:') && !textToCopy.startsWith('Waiting for response')) {
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btnCopyPrompt.textContent;
-                btnCopyPrompt.textContent = 'Copied!';
+    function updateJsonOutput() {
+        if (currentJsonData) {
+            jsonOutput.value = JSON.stringify(currentJsonData, null, 4);
+        }
+    }
+
+    btnCopyJson.addEventListener('click', () => {
+        if (jsonOutput.value) {
+            navigator.clipboard.writeText(jsonOutput.value).then(() => {
+                const originalText = btnCopyJson.textContent;
+                btnCopyJson.textContent = 'Copied!';
                 setTimeout(() => {
-                    btnCopyPrompt.textContent = originalText;
+                    btnCopyJson.textContent = originalText;
                 }, 2000);
             });
         }
     });
 });
+

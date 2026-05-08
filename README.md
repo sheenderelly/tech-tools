@@ -6,15 +6,14 @@ A premium collection of developer tools designed for productivity and ease of us
 
 - **Text Tools**: Change case (UPPERCASE, lowercase, Sentence case), Kana Width converter.
 - **Number Tools**: Phone number formatter for JP and PH regions.
-- **AI Tools**: Clean and refine prompts using Google Gemini models.
-- **Modern UI**: Dark mode, responsive design, and smooth animations.
+- **JSON Tools**: JSON Editor with table visualization and real-time editing.
+- **Modern UI**: Dark mode, glassmorphism, responsive design, and smooth animations.
 
 ## 🛠️ Technology Stack
 
 - **Core**: HTML5, Vanilla JavaScript
 - **Styling**: Vanilla CSS3 (Custom Properties, Grid, Flexbox)
 - **Typography**: Inter (Google Fonts)
-- **AI Integration**: Google Gemini API
 
 ## 🌐 Live Demo
 

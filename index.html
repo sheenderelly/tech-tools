@@ -28,9 +28,9 @@
                         <span class="icon">#</span>
                         <span class="label">NUMBER</span>
                     </li>
-                    <li class="nav-item" data-category="ai">
-                        <span class="icon">✨</span>
-                        <span class="label">AI TOOLS</span>
+                    <li class="nav-item" data-category="json">
+                        <span class="icon">{ }</span>
+                        <span class="label">JSON</span>
                     </li>
                     <!-- Add more categories here in the future -->
                 </ul>
@@ -169,71 +169,66 @@
                 </div>
             </div>
 
-            <!-- AI Tools Menu Area -->
-            <div id="ai-tools-menu" class="tools-menu view-hidden">
-                <h2 id="current-category-title-ai">AI Tools</h2>
-                <div class="tools-grid" id="ai-tools-grid">
-                    <div class="tool-card" data-tool="clean-prompt">
-                        <div class="tool-icon">✨</div>
+            <!-- JSON Tools Menu Area -->
+            <div id="json-tools-menu" class="tools-menu view-hidden">
+                <h2 id="current-category-title-json">JSON Tools</h2>
+                <div class="tools-grid" id="json-tools-grid">
+                    <div class="tool-card" data-tool="json-editor">
+                        <div class="tool-icon">{ }</div>
                         <div class="tool-details">
-                            <h3>Clean Prompt</h3>
-                            <p>Refine and structure your prompts using AI Models.</p>
+                            <h3>JSON Editor</h3>
+                            <p>Parse, visualize as a table, and edit your JSON data.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Specific Tool View: Clean Prompt -->
-            <div id="clean-prompt-view" class="tool-view view-hidden">
+            <!-- Specific Tool View: JSON Editor -->
+            <div id="json-editor-view" class="tool-view view-hidden">
                 <div class="view-header">
-                    <button class="back-btn" id="back-to-menu-btn-ai">
+                    <button class="back-btn" id="back-to-menu-btn-json">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 12H5M12 19l-7-7 7-7"/>
                         </svg>
                         Back
                     </button>
-                    <h2>Clean Prompt</h2>
+                    <h2>JSON Editor</h2>
                 </div>
                 
                 <div class="tool-body">
-                    <div class="controls-container">
-                        <div class="control-group">
-                            <label for="ai-model-select">AI Model</label>
-                            <select id="ai-model-select">
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                            </select>
+                    <div class="json-input-section">
+                        <div class="textarea-container">
+                            <label for="json-input">Paste JSON here</label>
+                            <textarea id="json-input" placeholder='{ "example": "data" }' style="height: 150px; flex: none;"></textarea>
                         </div>
-                        <div class="control-group" style="flex: 1;">
-                            <label for="gemini-api-key">Google Gemini API Key (Optional)</label>
-                            <input type="password" id="gemini-api-key" placeholder="Enter API Key (Saved locally in your browser)" class="api-key-input">
-                        </div>
-                        <div class="control-group">
-                            <label>Status</label>
-                            <div class="toggle-badges">
-                                <button class="badge-toggle" id="toggle-api-key-active">Use API Key</button>
-                            </div>
+                        <div class="action-buttons" style="margin-top: 12px;">
+                            <button class="action-btn primary-btn" id="btn-visualize-json">Visualize & Edit</button>
+                            <button class="action-btn" id="btn-format-json">Prettify</button>
                         </div>
                     </div>
                     
-                    <div class="side-by-side-container">
-                        <div class="textarea-container input-container">
-                            <label for="prompt-input">Original Prompt</label>
-                            <textarea id="prompt-input" placeholder="Enter your raw prompt idea here..."></textarea>
-                        </div>
-                        <div class="textarea-container output-container">
-                            <div class="output-header">
-                                <label for="prompt-output">Cleaned Prompt</label>
-                                <button class="copy-btn" id="btn-copy-prompt">Copy</button>
+                    <div id="json-visualizer-container" class="visualizer-container view-hidden">
+                        <div class="visualizer-header">
+                            <h3>Data Visualization</h3>
+                            <div class="visualizer-actions">
+                                <button class="action-btn" id="btn-add-row">Add Item</button>
                             </div>
-                            <textarea id="prompt-output" readonly placeholder="Refined prompt will appear here..."></textarea>
+                        </div>
+                        <div class="table-wrapper">
+                            <table id="json-table">
+                                <!-- Generated dynamically -->
+                            </table>
                         </div>
                     </div>
-                    
-                    <div class="action-buttons submit-actions">
-                        <button class="action-btn primary-btn" id="btn-clean-prompt">✨ Clean Prompt</button>
+
+                    <div class="json-output-section">
+                        <div class="output-header">
+                            <label for="json-output">Resulting JSON</label>
+                            <button class="copy-btn" id="btn-copy-json">Copy JSON</button>
+                        </div>
+                        <div class="textarea-container">
+                            <textarea id="json-output" readonly placeholder="Output will appear here..."></textarea>
+                        </div>
                     </div>
                 </div>
             </div>

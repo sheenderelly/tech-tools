@@ -406,46 +406,107 @@ textarea:focus {
     border-color: var(--accent-primary);
 }
 
-.api-key-input {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
+/* JSON Visualizer Styles */
+.visualizer-container {
+    background-color: var(--bg-card);
     border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: 500px;
+}
+
+.visualizer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.visualizer-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.table-wrapper {
+    overflow: auto;
     border-radius: 8px;
-    padding: 10px 14px;
-    font-family: var(--font-family);
-    font-size: 0.95rem;
-    outline: none;
-    transition: all var(--transition-fast);
+    border: 1px solid var(--border-color);
+    background: var(--bg-dark);
+}
+
+table {
     width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
 }
 
-.api-key-input:focus {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px var(--accent-active-bg);
-}
-
-select {
-    background-color: var(--bg-dark);
+th {
+    background-color: var(--bg-card-hover);
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-family: var(--font-family);
-    font-size: 0.95rem;
-    outline: none;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid var(--border-color);
+    position: sticky;
+    top: 0;
+}
+
+td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.table-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-primary);
+    padding: 6px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
     transition: all var(--transition-fast);
 }
 
-select:focus {
+.table-input:focus {
+    background: var(--bg-card);
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 2px var(--accent-active-bg);
+    outline: none;
 }
 
-.side-by-side-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    flex: 1;
+.btn-remove-row {
+    background: rgba(255, 69, 58, 0.1);
+    color: #ff453a;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-remove-row:hover {
+    background: #ff453a;
+    color: white;
+}
+
+.json-output-section {
+    margin-top: auto;
+}
+
+.json-input-section label, .json-output-section label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 8px;
 }
 
 .input-container label, .output-header label {
