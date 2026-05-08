@@ -335,10 +335,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 const td = document.createElement('td');
                 const input = document.createElement('input');
                 input.className = 'table-input';
-                input.value = (item[key] !== undefined) ? item[key] : '';
+                
+                let val = item[key];
+                if (typeof val === 'object' && val !== null) {
+                    input.value = JSON.stringify(val);
+                } else {
+                    input.value = (val !== undefined) ? val : '';
+                }
+
                 input.addEventListener('input', (e) => {
-                    if (Array.isArray(currentJsonData)) currentJsonData[index][key] = e.target.value;
-                    else currentJsonData[key] = e.target.value;
+                    let newVal = e.target.value;
+                    // Attempt to parse if it looks like JSON object/array
+                    if (newVal.trim().startsWith('{') || newVal.trim().startsWith('[')) {
+                        try {
+                            newVal = JSON.parse(newVal);
+                        } catch (err) {
+                            // Leave as string if not valid JSON
+                        }
+                    }
+                    
+                    if (Array.isArray(currentJsonData)) {
+                        currentJsonData[index][key] = newVal;
+                    } else {
+                        currentJsonData[key] = newVal;
+                    }
                     updateJsonOutput();
                 });
                 td.appendChild(input);
