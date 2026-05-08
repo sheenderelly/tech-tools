@@ -1,29 +1,34 @@
 :root {
-    /* Color Palette - Dark Theme */
-    --bg-darker: #121212;
-    --bg-dark: #1e1e1e;
-    --bg-card: #2d2d2d;
-    --bg-card-hover: #3a3a3a;
+    /* Color Palette - Premium Dark Theme */
+    --bg-darker: #0a0a0a;
+    --bg-dark: #121212;
+    --bg-card: rgba(30, 30, 30, 0.7);
+    --bg-card-hover: rgba(45, 45, 45, 0.9);
     
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
-    --text-muted: #6e6e6e;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --text-muted: #6e6e73;
     
-    --accent-primary: #657c50; /* Fatigue Olive Green */
-    --accent-primary-hover: #4f633c;
-    --accent-active-bg: rgba(101, 124, 80, 0.15);
+    --accent-primary: #94ad7d; /* Lighter, more vibrant Fatigue Olive */
+    --accent-primary-hover: #b4c9a1;
+    --accent-active-bg: rgba(148, 173, 125, 0.15);
     
-    --border-color: #333333;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --border-color: #2c2c2e;
     
     /* Layout */
-    --sidebar-width: 250px;
+    --sidebar-width: 260px;
     
     /* Typography */
-    --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     
     /* Transitions */
-    --transition-fast: 0.15s ease;
-    --transition-normal: 0.25s ease;
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Gradients */
+    --grad-accent: linear-gradient(135deg, #94ad7d 0%, #657c50 100%);
 }
 
 * {
@@ -165,20 +170,42 @@ body {
 }
 
 .tool-card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 24px;
     display: flex;
     align-items: flex-start;
     cursor: pointer;
     transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--grad-accent);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    z-index: 0;
 }
 
 .tool-card:hover:not(.disabled) {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    border-color: var(--text-muted);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(148, 173, 125, 0.3);
+    background: var(--bg-card-hover);
+}
+
+.tool-card:hover .tool-icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .tool-card.disabled {
