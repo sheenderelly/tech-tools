@@ -133,6 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Salesforce: Create Icons
+    const createIconsCard = document.querySelector('[data-tool="create-icons"]');
+    const createIconsView = document.getElementById('create-icons-view');
+    if (createIconsCard) {
+        createIconsCard.addEventListener('click', () => {
+            showView(createIconsView);
+            initIconConverter();
+        });
+    }
+
     // Universal Back Button logic
     backBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -252,6 +262,214 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    }
+
+    // 4. Salesforce Icon Converter
+    let iconConverterReady = false;
+    let sfPalette = [];
+    let sfCurrentColor = '#204EA9';
+    let sfRenderTimer = null;
+
+    const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0070D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="9" y1="13" x2="15" y2="13"/>
+  <line x1="9" y1="17" x2="15" y2="17"/>
+</svg>`;
+
+    async function initIconConverter() {
+        if (iconConverterReady) return;
+        iconConverterReady = true;
+
+        try {
+            const resp = await fetch('legacy-colors.json');
+            sfPalette = await resp.json();
+        } catch (e) {
+            console.error('Failed to load legacy-colors.json', e);
+            sfPalette = [{ id: 'Default', hex: '#0070D2' }];
+        }
+
+        const paletteEl = document.getElementById('palette');
+        const svgInput = document.getElementById('svgInput');
+        const hexInput = document.getElementById('hexInput');
+        const hexPreview = document.getElementById('hexPreview');
+        const selectedHex = document.getElementById('selectedHex');
+
+        sfCurrentColor = (sfPalette[6] && sfPalette[6].hex) || sfCurrentColor;
+
+        paletteEl.innerHTML = '';
+        sfPalette.forEach(({ id, hex }) => {
+            const sw = document.createElement('div');
+            sw.className = 'sf-swatch' + (hex === sfCurrentColor ? ' selected' : '');
+            sw.style.background = hex;
+            sw.dataset.color = hex;
+            sw.dataset.id = id;
+            sw.title = `${id} — ${hex}`;
+            sw.addEventListener('click', () => {
+                sfCurrentColor = hex;
+                document.querySelectorAll('.sf-swatch').forEach(s => s.classList.remove('selected'));
+                sw.classList.add('selected');
+                selectedHex.textContent = `Selected: ${id} — ${hex}`;
+                hexInput.value = hex;
+                hexPreview.style.background = hex;
+                renderAllIcons();
+            });
+            paletteEl.appendChild(sw);
+        });
+
+        const initial = sfPalette.find(p => p.hex === sfCurrentColor);
+        selectedHex.textContent = `Selected: ${initial ? initial.id + ' — ' : ''}${sfCurrentColor}`;
+        hexInput.value = sfCurrentColor;
+        hexPreview.style.background = sfCurrentColor;
+
+        hexInput.addEventListener('input', (e) => {
+            let v = e.target.value.trim().toUpperCase();
+            if (v && !v.startsWith('#')) v = '#' + v;
+            if (/^#[0-9A-F]{6}$/.test(v)) {
+                sfCurrentColor = v;
+                document.querySelectorAll('.sf-swatch').forEach(s => s.classList.remove('selected'));
+                const match = sfPalette.find(p => p.hex === v);
+                if (match) {
+                    const swEl = document.querySelector(`.sf-swatch[data-id="${match.id}"]`);
+                    if (swEl) swEl.classList.add('selected');
+                }
+                hexPreview.style.background = v;
+                selectedHex.textContent = `Selected: ${match ? match.id + ' — ' : ''}${v}`;
+                renderAllIcons();
+            }
+        });
+
+        svgInput.value = SAMPLE_SVG;
+        svgInput.addEventListener('input', () => {
+            clearTimeout(sfRenderTimer);
+            sfRenderTimer = setTimeout(renderAllIcons, 250);
+        });
+
+        document.getElementById('btn-render-icons').addEventListener('click', renderAllIcons);
+        document.getElementById('btn-download-all-icons').addEventListener('click', downloadAllIcons);
+        document.querySelectorAll('[data-download]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                downloadIconCanvas(btn.dataset.download, btn.dataset.suffix);
+            });
+        });
+
+        renderAllIcons();
+    }
+
+    function normalizeSvg(svgText) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgText, 'image/svg+xml');
+        const err = doc.querySelector('parsererror');
+        if (err) throw new Error('Invalid SVG: ' + err.textContent.split('\n')[0]);
+        const svg = doc.documentElement;
+        if (svg.tagName.toLowerCase() !== 'svg') throw new Error('Root element must be <svg>');
+        if (!svg.getAttribute('xmlns')) svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        if (!svg.hasAttribute('width') || !svg.hasAttribute('height')) {
+            if (svg.hasAttribute('viewBox')) {
+                const vb = svg.getAttribute('viewBox').split(/[\s,]+/);
+                if (vb.length === 4) {
+                    svg.setAttribute('width', vb[2]);
+                    svg.setAttribute('height', vb[3]);
+                }
+            } else {
+                svg.setAttribute('width', '24');
+                svg.setAttribute('height', '24');
+            }
+        }
+        return new XMLSerializer().serializeToString(svg);
+    }
+
+    function svgToImage(svgText) {
+        return new Promise((resolve, reject) => {
+            const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load SVG as image')); };
+            img.src = url;
+        });
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+
+    function renderLegacyIcon(canvasId, img, size) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(img, 0, 0, size, size);
+    }
+
+    function renderSldsIcon(canvasId, img, size, color) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+
+        const radius = Math.round(size * 0.15);
+        ctx.fillStyle = color;
+        roundRectPath(ctx, 0, 0, size, size, radius);
+        ctx.fill();
+
+        const glyphSize = Math.round(size * 0.60);
+        const glyphX = Math.round((size - glyphSize) / 2);
+        const glyphY = Math.round((size - glyphSize) / 2);
+
+        const off = document.createElement('canvas');
+        off.width = glyphSize;
+        off.height = glyphSize;
+        const offCtx = off.getContext('2d');
+        offCtx.drawImage(img, 0, 0, glyphSize, glyphSize);
+        offCtx.globalCompositeOperation = 'source-in';
+        offCtx.fillStyle = '#ffffff';
+        offCtx.fillRect(0, 0, glyphSize, glyphSize);
+
+        ctx.drawImage(off, glyphX, glyphY);
+    }
+
+    async function renderAllIcons() {
+        const errEl = document.getElementById('svgError');
+        if (!errEl) return;
+        errEl.style.display = 'none';
+        try {
+            const raw = document.getElementById('svgInput').value;
+            if (!raw.trim()) return;
+            const normalized = normalizeSvg(raw);
+            const img = await svgToImage(normalized);
+            renderLegacyIcon('canvas16', img, 16);
+            renderLegacyIcon('canvas32', img, 32);
+            renderSldsIcon('canvasSlds', img, 480, sfCurrentColor);
+        } catch (e) {
+            errEl.textContent = e.message;
+            errEl.style.display = 'block';
+        }
+    }
+
+    function downloadIconCanvas(canvasId, suffix) {
+        const canvas = document.getElementById(canvasId);
+        const name = (document.getElementById('iconName').value || 'icon').trim().replace(/\s+/g, '_');
+        canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}_${suffix}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    }
+
+    function downloadAllIcons() {
+        downloadIconCanvas('canvas16', '16x16');
+        setTimeout(() => downloadIconCanvas('canvas32', '32x32'), 150);
+        setTimeout(() => downloadIconCanvas('canvasSlds', 'slds'), 300);
     }
 
 });

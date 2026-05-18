@@ -182,8 +182,85 @@
                     </div>
                 </div>
             </div>
+            <!-- Specific Tool View: Create Icons -->
+            <div id="create-icons-view" class="tool-view view-hidden">
+                <div class="view-header">
+                    <button class="back-btn" id="back-to-menu-btn-icons">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back
+                    </button>
+                    <h2>Create Salesforce Icons</h2>
+                </div>
+
+                <div class="tool-body">
+                    <div class="sf-icon-grid">
+                        <div class="sf-panel">
+                            <h3 class="sf-panel-title">Input</h3>
+
+                            <label for="iconName" class="sf-label">Icon name (used for filenames)</label>
+                            <input type="text" id="iconName" class="sf-input" value="my_icon" autocomplete="off">
+
+                            <label for="svgInput" class="sf-label">SVG code</label>
+                            <textarea id="svgInput" class="sf-textarea" spellcheck="false"></textarea>
+                            <div id="svgError" class="sf-error"></div>
+
+                            <label class="sf-label">Salesforce tab color</label>
+                            <div class="sf-palette" id="palette"></div>
+                            <div class="sf-hex-row">
+                                <label for="hexInput" class="sf-label" style="margin:0;">Or paste hex:</label>
+                                <input type="text" id="hexInput" class="sf-input sf-hex-input" maxlength="7" placeholder="#0070D2" autocomplete="off">
+                                <div class="sf-swatch-preview" id="hexPreview"></div>
+                            </div>
+                            <div class="sf-selected-hex" id="selectedHex"></div>
+
+                            <div class="action-buttons" style="margin-top: 20px;">
+                                <button class="action-btn primary-btn" id="btn-render-icons">Re-render preview</button>
+                                <button class="action-btn" id="btn-download-all-icons">Download all 3 PNGs</button>
+                            </div>
+                        </div>
+
+                        <div class="sf-panel">
+                            <h3 class="sf-panel-title">Output</h3>
+                            <div class="sf-previews">
+                                <div class="sf-preview-card">
+                                    <div class="sf-canvas-wrap">
+                                        <canvas id="canvas16" width="16" height="16" style="width:64px;height:64px;"></canvas>
+                                    </div>
+                                    <div class="sf-preview-meta">
+                                        <div class="sf-preview-title">Legacy 16×16 PNG</div>
+                                        <div class="sf-preview-desc">For Setup &gt; Tabs &gt; Custom Tab (small icon). Transparent background.</div>
+                                    </div>
+                                    <button class="action-btn" data-download="canvas16" data-suffix="16x16">Download</button>
+                                </div>
+                                <div class="sf-preview-card">
+                                    <div class="sf-canvas-wrap">
+                                        <canvas id="canvas32" width="32" height="32" style="width:96px;height:96px;"></canvas>
+                                    </div>
+                                    <div class="sf-preview-meta">
+                                        <div class="sf-preview-title">Legacy 32×32 PNG</div>
+                                        <div class="sf-preview-desc">For the New Tab splash page. Transparent background.</div>
+                                    </div>
+                                    <button class="action-btn" data-download="canvas32" data-suffix="32x32">Download</button>
+                                </div>
+                                <div class="sf-preview-card">
+                                    <div class="sf-canvas-wrap">
+                                        <canvas id="canvasSlds" width="480" height="480" style="width:120px;height:120px;image-rendering:auto;"></canvas>
+                                    </div>
+                                    <div class="sf-preview-meta">
+                                        <div class="sf-preview-title">SLDS-style 480×480 PNG</div>
+                                        <div class="sf-preview-desc">Per SLDS spec: 60% live area, 20% padding. For LWC static resources, VFP, Aura.</div>
+                                    </div>
+                                    <button class="action-btn" data-download="canvasSlds" data-suffix="slds">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>
