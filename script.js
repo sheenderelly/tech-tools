@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements - Menus
     const textToolsMenu = document.getElementById('text-tools-menu');
     const numberToolsMenu = document.getElementById('number-tools-menu');
+    const salesforceToolsMenu = document.getElementById('salesforce-tools-menu');
     // Default starting menu
     let currentMenu = textToolsMenu;
 
@@ -102,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentMenu = textToolsMenu;
             } else if (category === 'number') {
                 currentMenu = numberToolsMenu;
+            } else if (category === 'salesforce') {
+                currentMenu = salesforceToolsMenu;
             }
 
             showView(currentMenu);
