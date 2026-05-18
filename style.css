@@ -38,7 +38,7 @@
     --sidebar-width: 260px;
 
     /* Typography */
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family: 'Roboto Mono', monospace;
 
     /* Transitions */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -484,6 +484,8 @@ textarea:focus {
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     padding: 20px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .sf-panel-title {
@@ -515,7 +517,7 @@ textarea:focus {
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     font-size: 0.875rem;
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Roboto Mono', monospace;
     color: var(--text-primary);
     transition: border-color 0.2s;
 }
@@ -528,7 +530,16 @@ textarea:focus {
 
 .sf-textarea {
     resize: vertical;
+    height: auto;
     min-height: 160px;
+    max-width: 100%;
+    display: block;
+    white-space: pre;
+    overflow: auto;
+}
+
+.sf-size-input {
+    width: 130px;
 }
 
 .sf-hex-row {
@@ -605,7 +616,7 @@ textarea:focus {
 .sf-preview-desc code,
 .sf-preview-desc strong,
 .sf-preview-desc em { color: var(--text-primary); }
-.sf-preview-desc code { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.78rem; }
+.sf-preview-desc code { font-family: 'Roboto Mono', monospace; font-size: 0.78rem; }
 
 .sf-hint {
     font-size: 0.78rem;
@@ -614,7 +625,7 @@ textarea:focus {
     line-height: 1.5;
 }
 .sf-hint code {
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Roboto Mono', monospace;
     background: var(--color-moss-dark);
     padding: 1px 6px;
     border-radius: var(--radius-sm);
@@ -632,7 +643,7 @@ textarea:focus {
     margin-bottom: 18px;
 }
 .sf-usage-intro code {
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Roboto Mono', monospace;
     background: var(--color-moss-dark);
     padding: 1px 6px;
     border-radius: var(--radius-sm);
@@ -680,7 +691,7 @@ textarea:focus {
 }
 
 .sf-snippet code {
-    font-family: 'Consolas', 'Monaco', monospace;
+    font-family: 'Roboto Mono', monospace;
     font-size: 0.8rem;
     color: var(--text-primary);
     line-height: 1.55;

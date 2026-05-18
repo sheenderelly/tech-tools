@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Developer Tools</title>
     <meta name="description" content="A simple collection of developer tools.">
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
@@ -203,6 +203,10 @@
                             <input type="text" id="iconName" class="sf-input" value="my_icon" autocomplete="off" placeholder="lowercase_with_underscores">
                             <div class="sf-hint">Conventions: lowercase with underscores, no spaces, no leading digit, e.g. <code>account_brief_icon</code>.</div>
 
+                            <label for="iconSize" class="sf-label">Display / PNG size (px)</label>
+                            <input type="number" id="iconSize" class="sf-input sf-size-input" value="60" min="16" max="480" step="1" autocomplete="off">
+                            <div class="sf-hint">Drives the transparent PNG dimensions and the <code>width</code>/<code>height</code> in the snippets below. 60 fits the Lightning Custom Image upload; 120+ is safer for high-DPI.</div>
+
                             <label for="svgInput" class="sf-label">SVG code</label>
                             <textarea id="svgInput" class="sf-textarea" spellcheck="false"></textarea>
                             <div id="svgError" class="sf-error"></div>
@@ -224,23 +228,13 @@
                             <div class="sf-previews">
                                 <div class="sf-preview-card">
                                     <div class="sf-canvas-wrap">
-                                        <canvas id="canvas16" width="16" height="16" style="width:64px;height:64px;"></canvas>
+                                        <canvas id="canvasFlat" width="60" height="60" style="width:96px;height:96px;"></canvas>
                                     </div>
                                     <div class="sf-preview-meta">
-                                        <div class="sf-preview-title">Legacy 16×16 PNG</div>
-                                        <div class="sf-preview-desc">Custom tab icon (Classic). Upload via <strong>Setup → Documents</strong>, mark <em>Externally Available Image</em>.</div>
+                                        <div class="sf-preview-title">Flat <span class="sf-size-echo">60</span>×<span class="sf-size-echo">60</span> PNG</div>
+                                        <div class="sf-preview-desc">Transparent background. Upload via Object Manager → Tabs → <strong>Custom Image</strong>, or as a Document.</div>
                                     </div>
-                                    <button class="action-btn" data-download="canvas16" data-suffix="16x16">Download</button>
-                                </div>
-                                <div class="sf-preview-card">
-                                    <div class="sf-canvas-wrap">
-                                        <canvas id="canvas32" width="32" height="32" style="width:96px;height:96px;"></canvas>
-                                    </div>
-                                    <div class="sf-preview-meta">
-                                        <div class="sf-preview-title">Legacy 32×32 PNG</div>
-                                        <div class="sf-preview-desc">New Tab splash icon (Classic). Same upload path as the 16×16.</div>
-                                    </div>
-                                    <button class="action-btn" data-download="canvas32" data-suffix="32x32">Download</button>
+                                    <button class="action-btn" data-download="canvasFlat" data-suffix="flat">Download</button>
                                 </div>
                                 <div class="sf-preview-card">
                                     <div class="sf-canvas-wrap">
@@ -283,14 +277,6 @@
 
                             <div class="sf-snippet">
                                 <div class="sf-snippet-head">
-                                    <span class="sf-snippet-label">Aura component</span>
-                                    <button class="copy-btn" data-copy-target="snippet-aura">Copy</button>
-                                </div>
-                                <pre><code id="snippet-aura"></code></pre>
-                            </div>
-
-                            <div class="sf-snippet">
-                                <div class="sf-snippet-head">
                                     <span class="sf-snippet-label">Visualforce</span>
                                     <button class="copy-btn" data-copy-target="snippet-vf">Copy</button>
                                 </div>
@@ -318,6 +304,6 @@
             </div>
         </main>
     </div>
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>

@@ -268,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let iconConverterReady = false;
     let sfCurrentColor = '#0070D2';
     let sfRenderTimer = null;
+    let sfFlatSize = 60;
 
     const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0070D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -284,9 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const hexInput = document.getElementById('hexInput');
         const hexPreview = document.getElementById('hexPreview');
         const iconName = document.getElementById('iconName');
+        const iconSize = document.getElementById('iconSize');
 
         hexInput.value = sfCurrentColor;
         hexPreview.style.background = sfCurrentColor;
+        sfFlatSize = clampIconSize(iconSize.value);
+
+        iconSize.addEventListener('input', () => {
+            sfFlatSize = clampIconSize(iconSize.value);
+            document.querySelectorAll('.sf-size-echo').forEach(el => { el.textContent = sfFlatSize; });
+            const flat = document.getElementById('canvasFlat');
+            flat.width = sfFlatSize;
+            flat.height = sfFlatSize;
+            updateIconSnippets();
+            renderAllIcons();
+        });
 
         hexInput.addEventListener('input', (e) => {
             let v = e.target.value.trim().toUpperCase();
@@ -310,7 +323,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btn-download-all-icons').addEventListener('click', downloadAllIcons);
         document.querySelectorAll('[data-download]').forEach(btn => {
             btn.addEventListener('click', () => {
-                downloadIconCanvas(btn.dataset.download, btn.dataset.suffix);
+                const canvasId = btn.dataset.download;
+                const suffix = canvasId === 'canvasFlat'
+                    ? `${sfFlatSize}x${sfFlatSize}`
+                    : btn.dataset.suffix;
+                downloadIconCanvas(canvasId, suffix);
             });
         });
         document.querySelectorAll('[data-copy-target]').forEach(btn => {
@@ -336,13 +353,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = sanitizeIconName(raw);
         const camel = toCamel(name);
         const constName = name.toUpperCase();
+        const size = sfFlatSize;
 
         document.querySelectorAll('.sf-name-echo').forEach(el => { el.textContent = name; });
+        document.querySelectorAll('.sf-size-echo').forEach(el => { el.textContent = size; });
 
         const snippets = {
             'snippet-lwc-html':
 `<template>
-  <img src={iconUrl} alt="${name}" class="slds-icon slds-icon_medium" />
+  <img src={iconUrl} alt="${name}" width="${size}" height="${size}" />
 </template>`,
             'snippet-lwc-js':
 `import { LightningElement } from 'lwc';
@@ -351,23 +370,19 @@ import ${constName} from '@salesforce/resourceUrl/${name}';
 export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends LightningElement {
   iconUrl = ${constName};
 }`,
-            'snippet-aura':
-`<aura:component>
-  <img src="{!$Resource.${name}}" alt="${name}" class="slds-icon slds-icon_medium" />
-</aura:component>`,
             'snippet-vf':
-`<apex:image url="{!$Resource.${name}}" alt="${name}" width="32" height="32" />`,
+`<apex:image url="{!$Resource.${name}}" alt="${name}" width="${size}" height="${size}" />`,
             'snippet-css':
 `.${name.replace(/_/g, '-')} {
   background-image: url('/resource/${name}');
   background-size: contain;
   background-repeat: no-repeat;
-  width: 32px;
-  height: 32px;
+  width: ${size}px;
+  height: ${size}px;
 }`,
             'snippet-slds':
 `<span class="slds-icon_container slds-icon-standard-custom" title="${name}">
-  <img src={iconUrl} alt="${name}" class="slds-icon slds-icon_small" />
+  <img src={iconUrl} alt="${name}" width="${size}" height="${size}" />
   <span class="slds-assistive-text">${name}</span>
 </span>`,
         };
@@ -474,13 +489,26 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
             if (!raw.trim()) return;
             const normalized = normalizeSvg(raw);
             const img = await svgToImage(normalized);
-            renderLegacyIcon('canvas16', img, 16);
-            renderLegacyIcon('canvas32', img, 32);
+            const flat = document.getElementById('canvasFlat');
+            flat.width = sfFlatSize;
+            flat.height = sfFlatSize;
+            renderLegacyIcon('canvasFlat', img, sfFlatSize);
             renderSldsIcon('canvasSlds', img, 480, sfCurrentColor);
         } catch (e) {
             errEl.textContent = e.message;
             errEl.style.display = 'block';
         }
+    }
+
+    function clampIconSize(v) {
+        const n = parseInt(v, 10);
+        if (isNaN(n)) return 60;
+        return Math.max(16, Math.min(480, n));
+    }
+
+    function downloadAllIcons() {
+        downloadIconCanvas('canvasFlat', `${sfFlatSize}x${sfFlatSize}`);
+        setTimeout(() => downloadIconCanvas('canvasSlds', 'slds'), 150);
     }
 
     function downloadIconCanvas(canvasId, suffix) {
@@ -496,12 +524,6 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }, 'image/png');
-    }
-
-    function downloadAllIcons() {
-        downloadIconCanvas('canvas16', '16x16');
-        setTimeout(() => downloadIconCanvas('canvas32', '32x32'), 150);
-        setTimeout(() => downloadIconCanvas('canvasSlds', 'slds'), 300);
     }
 
 });
