@@ -592,64 +592,21 @@ td {
     min-height: 160px;
 }
 
-.sf-palette {
-    display: grid;
-    grid-template-columns: repeat(22, 22px);
-    gap: 0;
-    border: 1px solid #c8c8c8;
-    width: fit-content;
-    max-width: 100%;
-    background: #ffffff;
-    padding: 0;
-    line-height: 0;
-}
-.sf-swatch {
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    position: relative;
-    border: 0;
-    border-radius: 0;
-}
-.sf-swatch:hover {
-    outline: 2px solid #ffffff;
-    outline-offset: -2px;
-    box-shadow: 0 0 0 2px #16325c, 0 2px 6px rgba(0,0,0,0.5);
-    z-index: 2;
-}
-.sf-swatch.selected {
-    outline: 2px solid #ffffff;
-    outline-offset: -2px;
-    box-shadow: 0 0 0 2px #16325c;
-    z-index: 1;
-}
-
 .sf-hex-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--border-color);
 }
-.sf-hex-row .sf-label { white-space: nowrap; }
 .sf-hex-input {
-    width: 110px;
+    width: 130px;
     text-transform: uppercase;
 }
 .sf-swatch-preview {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 6px;
     border: 1px solid var(--border-color);
     background: #0070D2;
-}
-
-.sf-selected-hex {
-    font-family: 'Consolas', monospace;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    margin-top: 10px;
 }
 
 .sf-error {

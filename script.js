@@ -266,8 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Salesforce Icon Converter
     let iconConverterReady = false;
-    let sfPalette = [];
-    let sfCurrentColor = '#204EA9';
+    let sfCurrentColor = '#0070D2';
     let sfRenderTimer = null;
 
     const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0070D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -277,48 +276,14 @@ document.addEventListener('DOMContentLoaded', () => {
   <line x1="9" y1="17" x2="15" y2="17"/>
 </svg>`;
 
-    async function initIconConverter() {
+    function initIconConverter() {
         if (iconConverterReady) return;
         iconConverterReady = true;
 
-        try {
-            const resp = await fetch('legacy-colors.json');
-            sfPalette = await resp.json();
-        } catch (e) {
-            console.error('Failed to load legacy-colors.json', e);
-            sfPalette = [{ id: 'Default', hex: '#0070D2' }];
-        }
-
-        const paletteEl = document.getElementById('palette');
         const svgInput = document.getElementById('svgInput');
         const hexInput = document.getElementById('hexInput');
         const hexPreview = document.getElementById('hexPreview');
-        const selectedHex = document.getElementById('selectedHex');
 
-        sfCurrentColor = (sfPalette[6] && sfPalette[6].hex) || sfCurrentColor;
-
-        paletteEl.innerHTML = '';
-        sfPalette.forEach(({ id, hex }) => {
-            const sw = document.createElement('div');
-            sw.className = 'sf-swatch' + (hex === sfCurrentColor ? ' selected' : '');
-            sw.style.background = hex;
-            sw.dataset.color = hex;
-            sw.dataset.id = id;
-            sw.title = `${id} — ${hex}`;
-            sw.addEventListener('click', () => {
-                sfCurrentColor = hex;
-                document.querySelectorAll('.sf-swatch').forEach(s => s.classList.remove('selected'));
-                sw.classList.add('selected');
-                selectedHex.textContent = `Selected: ${id} — ${hex}`;
-                hexInput.value = hex;
-                hexPreview.style.background = hex;
-                renderAllIcons();
-            });
-            paletteEl.appendChild(sw);
-        });
-
-        const initial = sfPalette.find(p => p.hex === sfCurrentColor);
-        selectedHex.textContent = `Selected: ${initial ? initial.id + ' — ' : ''}${sfCurrentColor}`;
         hexInput.value = sfCurrentColor;
         hexPreview.style.background = sfCurrentColor;
 
@@ -327,14 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (v && !v.startsWith('#')) v = '#' + v;
             if (/^#[0-9A-F]{6}$/.test(v)) {
                 sfCurrentColor = v;
-                document.querySelectorAll('.sf-swatch').forEach(s => s.classList.remove('selected'));
-                const match = sfPalette.find(p => p.hex === v);
-                if (match) {
-                    const swEl = document.querySelector(`.sf-swatch[data-id="${match.id}"]`);
-                    if (swEl) swEl.classList.add('selected');
-                }
                 hexPreview.style.background = v;
-                selectedHex.textContent = `Selected: ${match ? match.id + ' — ' : ''}${v}`;
                 renderAllIcons();
             }
         });

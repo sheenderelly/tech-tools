@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Developer Tools</title>
     <meta name="description" content="A simple collection of developer tools.">
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -206,14 +206,11 @@
                             <textarea id="svgInput" class="sf-textarea" spellcheck="false"></textarea>
                             <div id="svgError" class="sf-error"></div>
 
-                            <label class="sf-label">Salesforce tab color</label>
-                            <div class="sf-palette" id="palette"></div>
-                            <div class="sf-hex-row">
-                                <label for="hexInput" class="sf-label" style="margin:0;">Or paste hex:</label>
+                            <label for="hexInput" class="sf-label">SLDS background color (hex)</label>
+                            <div class="sf-hex-row" style="margin-top:0; padding-top:0; border-top:none;">
                                 <input type="text" id="hexInput" class="sf-input sf-hex-input" maxlength="7" placeholder="#0070D2" autocomplete="off">
                                 <div class="sf-swatch-preview" id="hexPreview"></div>
                             </div>
-                            <div class="sf-selected-hex" id="selectedHex"></div>
 
                             <div class="action-buttons" style="margin-top: 20px;">
                                 <button class="action-btn primary-btn" id="btn-render-icons">Re-render preview</button>
@@ -261,6 +258,6 @@
             </div>
         </main>
     </div>
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>
