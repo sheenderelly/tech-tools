@@ -602,3 +602,87 @@ textarea:focus {
 .sf-preview-meta { font-size: 0.875rem; }
 .sf-preview-title { font-weight: 600; color: var(--text-primary); }
 .sf-preview-desc { color: var(--text-secondary); font-size: 0.8rem; margin-top: 2px; }
+.sf-preview-desc code,
+.sf-preview-desc strong,
+.sf-preview-desc em { color: var(--text-primary); }
+.sf-preview-desc code { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.78rem; }
+
+.sf-hint {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.5;
+}
+.sf-hint code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: var(--color-moss-dark);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+}
+
+.sf-usage-section {
+    margin-top: 24px;
+}
+
+.sf-usage-intro {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+.sf-usage-intro code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: var(--color-moss-dark);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    font-size: 0.82rem;
+}
+
+.sf-snippet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 14px;
+}
+
+.sf-snippet {
+    background: var(--color-moss-dark);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.sf-snippet-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--color-moss-deep);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.sf-snippet-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.sf-snippet pre {
+    margin: 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    flex: 1;
+}
+
+.sf-snippet code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    line-height: 1.55;
+    white-space: pre;
+}

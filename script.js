@@ -283,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const svgInput = document.getElementById('svgInput');
         const hexInput = document.getElementById('hexInput');
         const hexPreview = document.getElementById('hexPreview');
+        const iconName = document.getElementById('iconName');
 
         hexInput.value = sfCurrentColor;
         hexPreview.style.background = sfCurrentColor;
@@ -303,6 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
             sfRenderTimer = setTimeout(renderAllIcons, 250);
         });
 
+        iconName.addEventListener('input', updateIconSnippets);
+
         document.getElementById('btn-render-icons').addEventListener('click', renderAllIcons);
         document.getElementById('btn-download-all-icons').addEventListener('click', downloadAllIcons);
         document.querySelectorAll('[data-download]').forEach(btn => {
@@ -310,8 +313,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadIconCanvas(btn.dataset.download, btn.dataset.suffix);
             });
         });
+        document.querySelectorAll('[data-copy-target]').forEach(btn => {
+            btn.addEventListener('click', () => copySnippet(btn));
+        });
 
+        updateIconSnippets();
         renderAllIcons();
+    }
+
+    function sanitizeIconName(raw) {
+        let name = (raw || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_');
+        if (!name || /^\d/.test(name)) name = 'my_icon';
+        return name;
+    }
+
+    function toCamel(snake) {
+        return snake.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
+    }
+
+    function updateIconSnippets() {
+        const raw = document.getElementById('iconName').value;
+        const name = sanitizeIconName(raw);
+        const camel = toCamel(name);
+        const constName = name.toUpperCase();
+
+        document.querySelectorAll('.sf-name-echo').forEach(el => { el.textContent = name; });
+
+        const snippets = {
+            'snippet-lwc-html':
+`<template>
+  <img src={iconUrl} alt="${name}" class="slds-icon slds-icon_medium" />
+</template>`,
+            'snippet-lwc-js':
+`import { LightningElement } from 'lwc';
+import ${constName} from '@salesforce/resourceUrl/${name}';
+
+export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends LightningElement {
+  iconUrl = ${constName};
+}`,
+            'snippet-aura':
+`<aura:component>
+  <img src="{!$Resource.${name}}" alt="${name}" class="slds-icon slds-icon_medium" />
+</aura:component>`,
+            'snippet-vf':
+`<apex:image url="{!$Resource.${name}}" alt="${name}" width="32" height="32" />`,
+            'snippet-css':
+`.${name.replace(/_/g, '-')} {
+  background-image: url('/resource/${name}');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 32px;
+  height: 32px;
+}`,
+            'snippet-slds':
+`<span class="slds-icon_container slds-icon-standard-custom" title="${name}">
+  <img src={iconUrl} alt="${name}" class="slds-icon slds-icon_small" />
+  <span class="slds-assistive-text">${name}</span>
+</span>`,
+        };
+
+        Object.entries(snippets).forEach(([id, code]) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = code;
+        });
+    }
+
+    function copySnippet(btn) {
+        const target = document.getElementById(btn.dataset.copyTarget);
+        if (!target) return;
+        navigator.clipboard.writeText(target.textContent).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
     }
 
     function normalizeSvg(svgText) {
