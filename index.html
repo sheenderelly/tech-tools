@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts for modern typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -15,7 +16,18 @@
     <div class="app-container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h1>DevTools</h1>
+                <div class="brand-mark">
+                    <i data-lucide="leaf"></i>
+                    <h1>DevTools</h1>
+                </div>
+                <div class="theme-switch" role="group" aria-label="Theme toggle">
+                    <button id="theme-dark" class="active" type="button">
+                      <i data-lucide="moon"></i>
+                    </button>
+                    <button id="theme-light" type="button">
+                      <i data-lucide="sun"></i>
+                    </button>
+                </div>
             </div>
             <nav class="sidebar-nav">
                 <div class="category-header">Tools</div>
@@ -43,16 +55,16 @@
             <div id="text-tools-menu" class="tools-menu view-active">
                 <h2 id="current-category-title-text">Text Tools</h2>
                 <div class="tools-grid" id="text-tools-grid">
-                    <div class="tool-card" data-tool="change-case">
+                    <div class="panel tool-card" data-tool="change-case">
                         <div class="tool-icon">Aa</div>
                         <div class="tool-details">
                             <h3>Change Case</h3>
                             <p>Convert text between different letter cases.</p>
                         </div>
                     </div>
-                    <!-- Kana Width Converter -->
-                    <div class="tool-card" data-tool="kana-width-converter">
-                        <div class="tool-icon">Ｗ</div>
+
+                    <div class="panel tool-card" data-tool="kana-width-converter">
+                        <div class="tool-icon">あ</div>
                         <div class="tool-details">
                             <h3>Kana Width</h3>
                             <p>Convert English letters and numbers to full-width or half-width.</p>
@@ -65,7 +77,7 @@
             <div id="number-tools-menu" class="tools-menu view-hidden">
                 <h2 id="current-category-title-number">Number Tools</h2>
                 <div class="tools-grid" id="number-tools-grid">
-                    <div class="tool-card" data-tool="phone-formatter">
+                    <div class="panel tool-card" data-tool="phone-formatter">
                         <div class="tool-icon">☎</div>
                         <div class="tool-details">
                             <h3>Phone</h3>
@@ -79,19 +91,17 @@
             <div id="change-case-view" class="tool-view view-hidden">
                 <div class="view-header">
                     <button class="back-btn" id="back-to-menu-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
+                        <i data-lucide="arrow-left"></i>
                         Back
                     </button>
                     <h2>Change Case</h2>
                 </div>
                 
                 <div class="tool-body">
-                    <div class="action-buttons">
-                        <button class="action-btn" id="btn-uppercase">UPPERCASE</button>
-                        <button class="action-btn" id="btn-lowercase">lowercase</button>
-                        <button class="action-btn" id="btn-sentencecase">Sentence case</button>
+                    <div class="btn-row">
+                        <button class="btn btn-secondary" id="btn-uppercase">UPPERCASE</button>
+                        <button class="btn btn-secondary" id="btn-lowercase">lowercase</button>
+                        <button class="btn btn-secondary" id="btn-sentencecase">Sentence case</button>
                     </div>
                     <div class="textarea-container">
                         <textarea id="case-input" placeholder="Type or paste your text here..."></textarea>
@@ -103,18 +113,16 @@
             <div id="kana-width-view" class="tool-view view-hidden">
                 <div class="view-header">
                     <button class="back-btn" id="back-to-menu-btn-kana">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
+                        <i data-lucide="arrow-left"></i>
                         Back
                     </button>
                     <h2>Kana Width Converter</h2>
                 </div>
                 
                 <div class="tool-body">
-                    <div class="action-buttons">
-                        <button class="action-btn" id="btn-to-full-width">To Full-width</button>
-                        <button class="action-btn" id="btn-to-half-width">To Half-width</button>
+                    <div class="btn-row">
+                        <button class="btn btn-secondary" id="btn-to-full-width">To Full-width</button>
+                        <button class="btn btn-secondary" id="btn-to-half-width">To Half-width</button>
                     </div>
                     <div class="textarea-container">
                         <textarea id="kana-input" placeholder="Type or paste your text here (letters, numbers, symbols, kana)..."></textarea>
@@ -126,26 +134,24 @@
             <div id="phone-formatter-view" class="tool-view view-hidden">
                 <div class="view-header">
                     <button class="back-btn" id="back-to-menu-btn-phone">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
+                        <i data-lucide="arrow-left"></i>
                         Back
                     </button>
                     <h2>Phone Formatter</h2>
                 </div>
                 
                 <div class="tool-body">
-                    <div class="controls-container">
-                        <div class="control-group">
+                    <div class="panel controls-container">
+                        <div class="field">
                             <label for="country-select">Country Selector</label>
                             <select id="country-select">
                                 <option value="JP">Japan (JP) +81</option>
                                 <option value="PH">Philippines (PH) +63</option>
                             </select>
                         </div>
-                        <div class="control-group">
+                        <div class="field">
                             <label>Format Options</label>
-                            <div class="toggle-badges">
+                            <div class="btn-row">
                                 <button class="badge-toggle" id="toggle-country-code">Include Country Code</button>
                                 <button class="badge-toggle" id="toggle-hyphens">Use Hyphens</button>
                                 <button class="badge-toggle" id="toggle-spaces">Use Space</button>
@@ -161,7 +167,7 @@
                         <div class="textarea-container output-container">
                             <div class="output-header">
                                 <label for="phone-output">Formatted Result</label>
-                                <button class="copy-btn" id="btn-copy-phone">Copy All</button>
+                                <button class="btn btn-ghost" id="btn-copy-phone">Copy All</button>
                             </div>
                             <textarea id="phone-output" readonly placeholder="Results will appear here..."></textarea>
                         </div>
@@ -173,7 +179,7 @@
             <div id="json-tools-menu" class="tools-menu view-hidden">
                 <h2 id="current-category-title-json">JSON Tools</h2>
                 <div class="tools-grid" id="json-tools-grid">
-                    <div class="tool-card" data-tool="json-editor">
+                    <div class="panel tool-card" data-tool="json-editor">
                         <div class="tool-icon">{ }</div>
                         <div class="tool-details">
                             <h3>JSON Editor</h3>
@@ -187,9 +193,7 @@
             <div id="json-editor-view" class="tool-view view-hidden">
                 <div class="view-header">
                     <button class="back-btn" id="back-to-menu-btn-json">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
+                        <i data-lucide="arrow-left"></i>
                         Back
                     </button>
                     <h2>JSON Editor</h2>
@@ -201,20 +205,20 @@
                             <label for="json-input">Paste JSON here</label>
                             <textarea id="json-input" placeholder='{ "example": "data" }' style="height: 150px; flex: none;"></textarea>
                         </div>
-                        <div class="action-buttons" style="margin-top: 12px;">
-                            <button class="action-btn primary-btn" id="btn-visualize-json">Visualize & Edit</button>
-                            <button class="action-btn" id="btn-format-json">Prettify</button>
+                        <div class="btn-row" style="margin-top: 12px;">
+                            <button class="btn btn-primary" id="btn-visualize-json">Visualize & Edit</button>
+                            <button class="btn btn-secondary" id="btn-format-json">Prettify</button>
                         </div>
                     </div>
                     
-                    <div id="json-visualizer-container" class="visualizer-container view-hidden">
+                    <div id="json-visualizer-container" class="panel visualizer-container view-hidden">
                         <div class="visualizer-header">
                             <h3>Data Visualization</h3>
                             <div class="visualizer-actions">
-                                <button class="action-btn" id="btn-add-row">Add Item</button>
+                                <button class="btn btn-secondary" id="btn-add-row">Add Item</button>
                             </div>
                         </div>
-                        <div class="table-wrapper">
+                        <div class="table-wrapper panel">
                             <table id="json-table">
                                 <!-- Generated dynamically -->
                             </table>
@@ -224,7 +228,7 @@
                     <div class="json-output-section">
                         <div class="output-header">
                             <label for="json-output">Resulting JSON</label>
-                            <button class="copy-btn" id="btn-copy-json">Copy JSON</button>
+                            <button class="btn btn-ghost" id="btn-copy-json">Copy JSON</button>
                         </div>
                         <div class="textarea-container">
                             <textarea id="json-output" readonly placeholder="Output will appear here..."></textarea>

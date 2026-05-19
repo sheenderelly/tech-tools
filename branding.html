@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sheen — Branding & Style Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  /* ===== THEME TOKENS ===== */
+  :root[data-theme="dark"] {
+    /* Moss & Olive Palette */
+    --color-moss-deep:  #1a1c18;
+    --color-moss-dark:  #2d3329;
+    --color-moss-base:  #4a5441;
+    --color-moss-light: #8fbc8f;
+    --color-olive-dark: #556b2f;
+    --color-olive-base: #6b8e23;
+    --color-olive-light:#a9ba9d;
+    --color-gold-muted: #bdb76b;
+
+    /* UI Colors */
+    --bg-main:       var(--color-moss-deep);
+    --bg-sidebar:    rgba(45, 51, 41, 0.85);
+    --bg-card:       #242821;
+    --bg-elevated:   #2a2f25;
+    --text-primary:  #f1f3ec;
+    --text-secondary:#a9ba9d;
+    --text-muted:    #6c7a5e;
+    --border:        var(--color-moss-base);
+    --accent:        #d4e157;
+    --urgent:        #ff8a65;
+    --success:       #81c784;
+    --error:         #c0413c;
+    --warn:          #d4a017;
+    --link:          var(--accent);
+    --glass-border:  rgba(255, 255, 255, 0.05);
+  }
+
+  :root[data-theme="light"] {
+    --color-moss-deep:  #f4f1e6;
+    --color-moss-dark:  #e7e3d2;
+    --color-moss-base:  #c8c8b0;
+    --color-moss-light: #6b8e23;
+    --color-olive-dark: #3f5020;
+    --color-olive-base: #556b2f;
+    --color-olive-light:#4a5441;
+    --color-gold-muted: #8a7c2a;
+
+    --bg-main:       #f7f5ec;
+    --bg-sidebar:    rgba(231, 227, 210, 0.85);
+    --bg-card:       #ffffff;
+    --bg-elevated:   #f0ecdc;
+    --text-primary:  #1a1c18;
+    --text-secondary:#4a5441;
+    --text-muted:    #8a9078;
+    --border:        #c8c8b0;
+    --accent:        #6b8e23;
+    --urgent:        #d2691e;
+    --success:       #4a7c4a;
+    --error:         #b03a2e;
+    --warn:          #b8860b;
+    --link:          #556b2f;
+    --glass-border:  rgba(0, 0, 0, 0.06);
+  }
+
+  :root {
+    --radius-lg: 8px;
+    --radius-md: 6px;
+    --radius-sm: 4px;
+    --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --spacing-base: 1.5rem;
+    --spacing-tight: 1rem;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px; /* 0.85rem baseline */
+    background: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: var(--transition);
+  }
+
+  body {
+    min-height: 100vh;
+    padding: 2.5rem clamp(1rem, 4vw, 3rem);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* ===== HEADER ===== */
+  .brand-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .brand-mark svg {
+    width: 28px; height: 28px;
+    color: var(--accent);
+  }
+  .brand-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+  .brand-sub {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  /* ===== THEME SWITCH ===== */
+  .theme-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.25rem;
+    cursor: pointer;
+  }
+  .theme-switch button {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: var(--transition);
+  }
+  .theme-switch button svg { width: 14px; height: 14px; }
+  .theme-switch button.active {
+    background: var(--color-olive-dark);
+    color: #fff;
+  }
+  :root[data-theme="light"] .theme-switch button.active {
+    background: var(--color-olive-base);
+    color: #fff;
+  }
+
+  /* ===== SECTIONS / PANELS ===== */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+  }
+  .panel-title {
+    color: var(--color-olive-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .panel-title svg { width: 14px; height: 14px; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 800px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border);
+    gap: 1rem;
+  }
+  .row:last-child { border-bottom: none; }
+  .row .label {
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    min-width: 90px;
+  }
+
+  /* ===== TYPOGRAPHY SAMPLES ===== */
+  h1 { font-size: 2rem;    font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+  h2 { font-size: 1.5rem;  font-weight: 700; color: var(--text-primary); line-height: 1.25; }
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--accent);       line-height: 1.3; }
+  h4 { font-size: 1rem;    font-weight: 600; color: var(--color-olive-light); text-transform: uppercase; letter-spacing: 0.05em; }
+  h5 { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.1em; }
+  h6 { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.15em; }
+
+  p { color: var(--text-primary); }
+  p + p { margin-top: 0.5rem; }
+
+  .text-secondary { color: var(--text-secondary); }
+  .text-muted     { color: var(--text-muted); font-size: 11px; }
+  .text-accent    { color: var(--accent); font-weight: 500; }
+  .text-success   { color: var(--success); }
+  .text-warn      { color: var(--warn); }
+  .text-error     { color: var(--error); }
+  .text-urgent    { color: var(--urgent); }
+
+  a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-style: dashed;
+    transition: var(--transition);
+  }
+  a:hover { opacity: 0.75; }
+
+  code, .mono-inline {
+    font-family: 'Roboto Mono', monospace;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1px 6px;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  pre, .code-block {
+    font-family: 'Roboto Mono', monospace;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    font-size: 12px;
+    color: var(--text-primary);
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-elevated);
+    padding: 0.6rem 1rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+  button, .btn {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: var(--transition);
+    border: 1px solid transparent;
+  }
+  button svg, .btn svg { width: 14px; height: 14px; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-card);
+    font-weight: 600;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    background: var(--color-olive-dark);
+    color: #fff;
+    border-color: var(--color-olive-dark);
+  }
+  .btn-secondary:hover { background: var(--color-olive-base); border-color: var(--color-olive-base); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+  .btn-icon {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    padding: 0.4rem;
+  }
+  .btn-icon:hover { color: var(--accent); transform: scale(1.1); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--urgent);
+    border-color: var(--urgent);
+  }
+  .btn-danger:hover { background: var(--urgent); color: var(--bg-card); }
+
+  /* ===== COLOR SWATCHES ===== */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.6rem;
+  }
+  .swatch {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--bg-elevated);
+  }
+  .swatch-chip {
+    height: 50px;
+    width: 100%;
+  }
+  .swatch-meta {
+    padding: 0.4rem 0.6rem;
+    font-size: 11px;
+  }
+  .swatch-name {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .swatch-value {
+    color: var(--text-secondary);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== BADGES ===== */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border: 1px solid;
+  }
+  .badge svg { width: 11px; height: 11px; }
+  .badge-success { background: rgba(129,199,132,0.15); color: var(--success); border-color: var(--success); }
+  .badge-warn    { background: rgba(212,160,23,0.15); color: var(--warn); border-color: var(--warn); }
+  .badge-error   { background: rgba(192,65,60,0.15); color: var(--error); border-color: var(--error); }
+  .badge-accent  { background: rgba(212,225,87,0.15); color: var(--accent); border-color: var(--accent); }
+
+  /* ===== ICON GALLERY ===== */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.5rem;
+  }
+  .icon-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 0.5rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 10px;
+    transition: var(--transition);
+  }
+  .icon-tile:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .icon-tile svg { width: 20px; height: 20px; }
+
+  /* ===== INPUTS ===== */
+  input[type="text"], input[type="email"], textarea, select {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13px;
+    width: 100%;
+    transition: var(--transition);
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+  }
+  label {
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .field { margin-bottom: 0.75rem; }
+
+  /* ===== NOTIFICATIONS (inline samples) ===== */
+  .notif {
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 12px;
+  }
+  .notif svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .notif-success { background: rgba(129,199,132,0.12); color: var(--success); border-color: var(--success); }
+  .notif-error   { background: rgba(255,138,101,0.12); color: var(--urgent);  border-color: var(--urgent); }
+  .notif-warn    { background: rgba(212,160,23,0.12); color: var(--warn);    border-color: var(--warn); }
+  .notif-info    { background: rgba(212,225,87,0.10); color: var(--accent);  border-color: var(--accent); }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--color-moss-dark); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-moss-base); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 1rem 0;
+    border-top: 1px dashed var(--border);
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header class="brand-header">
+      <div class="brand-mark">
+        <i data-lucide="leaf"></i>
+        <div>
+          <div class="brand-title">sheen.dev</div>
+          <div class="brand-sub">Moss &amp; Olive — Style Guide</div>
+        </div>
+      </div>
+      <div class="theme-switch" role="group" aria-label="Theme toggle">
+        <button id="theme-dark" class="active" type="button">
+          <i data-lucide="moon"></i> Dark
+        </button>
+        <button id="theme-light" type="button">
+          <i data-lucide="sun"></i> Light
+        </button>
+      </div>
+    </header>
+
+    <!-- TYPOGRAPHY -->
+    <section class="panel">
+      <div class="panel-title"><i data-lucide="type"></i> Typography</div>
+
+      <div class="grid-2">
+        <div>
+          <h1>Heading 1 — Display</h1>
+          <p class="text-muted">&lt;h1&gt; · 2rem · 700 · for page titles / hero</p>
+          <br/>
+          <h2>Heading 2 — Section</h2>
+          <p class="text-muted">&lt;h2&gt; · 1.5rem · 700 · top-level section</p>
+          <br/>
+          <h3>Heading 3 — Subsection</h3>
+          <p class="text-muted">&lt;h3&gt; · 1.15rem · 600 · accent color · subsection / card title</p>
+          <br/>
+          <h4>Heading 4 — Eyebrow</h4>
+          <p class="text-muted">&lt;h4&gt; · 1rem · uppercase · panel labels</p>
+          <br/>
+          <h5>Heading 5 — Small</h5>
+          <p class="text-muted">&lt;h5&gt; · 0.85rem · uppercase tracked</p>
+          <br/>
+          <h6>Heading 6 — Micro Label</h6>
+          <p class="text-muted">&lt;h6&gt; · 0.75rem · secondary · for meta labels</p>
+        </div>
+
+        <div>
+          <h4>Body &amp; Inline</h4>
+          <p>This is a standard <code>&lt;p&gt;</code> paragraph — the workhorse of body copy. Default text color uses <code>--text-primary</code> on a moss-dark background. Line height is 1.6 for comfortable reading.</p>
+          <p><span class="text-secondary">Secondary text </span> via <code>.text-secondary</code> — for descriptions, captions, helper copy.</p>
+          <p><span class="text-muted">Muted text </span> via <code>.text-muted</code> — for timestamps, hints.</p>
+          <p>Inline <code>code</code> uses the same font with a subtle background tile. A link looks like <a href="#">this dashed underline</a> and turns lower-opacity on hover.</p>
+          <p><span class="text-accent">Accent emphasis</span> · <span class="text-success">success</span> · <span class="text-warn">warn</span> · <span class="text-error">error</span> · <span class="text-urgent">urgent</span></p>
+
+          <br/>
+          <h4>Blockquote</h4>
+          <blockquote>“Code should read like quiet prose — sparse, intentional, and slightly mossy.”</blockquote>
+
+          <br/>
+          <h4>Code Block</h4>
+          <pre>const theme = {
+  font: 'Roboto Mono',
+  vibe: 'moss &amp; olive'
+};</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLORS -->
+    <section class="panel">
+      <div class="panel-title"><i data-lucide="palette"></i> Color Palette</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-moss-deep)"></div><div class="swatch-meta"><div class="swatch-name">moss-deep</div><div class="swatch-value">--color-moss-deep</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-moss-dark)"></div><div class="swatch-meta"><div class="swatch-name">moss-dark</div><div class="swatch-value">--color-moss-dark</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-moss-base)"></div><div class="swatch-meta"><div class="swatch-name">moss-base</div><div class="swatch-value">--color-moss-base</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-moss-light)"></div><div class="swatch-meta"><div class="swatch-name">moss-light</div><div class="swatch-value">--color-moss-light</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-olive-dark)"></div><div class="swatch-meta"><div class="swatch-name">olive-dark</div><div class="swatch-value">--color-olive-dark</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-olive-base)"></div><div class="swatch-meta"><div class="swatch-name">olive-base</div><div class="swatch-value">--color-olive-base</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-olive-light)"></div><div class="swatch-meta"><div class="swatch-name">olive-light</div><div class="swatch-value">--color-olive-light</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--color-gold-muted)"></div><div class="swatch-meta"><div class="swatch-name">gold-muted</div><div class="swatch-value">--color-gold-muted</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--accent)"></div><div class="swatch-meta"><div class="swatch-name">accent</div><div class="swatch-value">--accent</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--success)"></div><div class="swatch-meta"><div class="swatch-name">success</div><div class="swatch-value">--success</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--urgent)"></div><div class="swatch-meta"><div class="swatch-name">urgent</div><div class="swatch-value">--urgent</div></div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--error)"></div><div class="swatch-meta"><div class="swatch-name">error</div><div class="swatch-value">--error</div></div></div>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <section class="panel">
+      <div class="panel-title"><i data-lucide="mouse-pointer-click"></i> Buttons</div>
+      <div class="btn-row">
+        <button class="btn-primary"><i data-lucide="check"></i> Primary</button>
+        <button class="btn-secondary"><i data-lucide="folder"></i> Secondary</button>
+        <button class="btn-ghost"><i data-lucide="settings"></i> Ghost</button>
+        <button class="btn-danger"><i data-lucide="trash-2"></i> Danger</button>
+        <button class="btn-icon" aria-label="refresh"><i data-lucide="refresh-cw"></i></button>
+        <button class="btn-icon" aria-label="copy"><i data-lucide="copy"></i></button>
+        <button class="btn-icon" aria-label="download"><i data-lucide="download"></i></button>
+      </div>
+      <br/>
+      <div class="btn-row">
+        <span class="badge badge-accent"><i data-lucide="sparkles"></i> Accent</span>
+        <span class="badge badge-success"><i data-lucide="check-circle-2"></i> Success</span>
+        <span class="badge badge-warn"><i data-lucide="alert-triangle"></i> Warn</span>
+        <span class="badge badge-error"><i data-lucide="x-circle"></i> Error</span>
+      </div>
+    </section>
+
+    <!-- FORM / NOTIF -->
+    <section class="grid-2">
+      <div class="panel">
+        <div class="panel-title"><i data-lucide="edit-3"></i> Form Controls</div>
+        <div class="field">
+          <label for="f1">Name</label>
+          <input id="f1" type="text" placeholder="e.g. sheen" />
+        </div>
+        <div class="field">
+          <label for="f2">Email</label>
+          <input id="f2" type="email" placeholder="you@domain.com" />
+        </div>
+        <div class="field">
+          <label for="f3">Preference</label>
+          <select id="f3">
+            <option>Olive</option>
+            <option>Moss</option>
+            <option>Gold</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f4">Notes</label>
+          <textarea id="f4" rows="3" placeholder="Quiet thoughts..."></textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title"><i data-lucide="bell"></i> Notifications</div>
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div class="notif notif-success"><i data-lucide="check-circle-2"></i> Saved successfully.</div>
+          <div class="notif notif-info"><i data-lucide="info"></i> Theme switched to light mode.</div>
+          <div class="notif notif-warn"><i data-lucide="alert-triangle"></i> Unsaved changes detected.</div>
+          <div class="notif notif-error"><i data-lucide="x-circle"></i> Connection failed — retry?</div>
+        </div>
+        <br/>
+        <div class="panel-title" style="margin-top:0.5rem;"><i data-lucide="link"></i> Links</div>
+        <p>External: <a href="https://lucide.dev" target="_blank" rel="noopener">lucide.dev</a></p>
+        <p>Internal: <a href="#">/settings/profile</a></p>
+        <p>Inline: open the <a href="#">configuration panel</a> to continue.</p>
+      </div>
+    </section>
+
+    <!-- ICONS -->
+    <section class="panel">
+      <div class="panel-title"><i data-lucide="grid-3x3"></i> Lucide Icons — Common Set</div>
+      <div class="icon-grid">
+        <div class="icon-tile"><i data-lucide="home"></i> home</div>
+        <div class="icon-tile"><i data-lucide="search"></i> search</div>
+        <div class="icon-tile"><i data-lucide="settings"></i> settings</div>
+        <div class="icon-tile"><i data-lucide="user"></i> user</div>
+        <div class="icon-tile"><i data-lucide="bell"></i> bell</div>
+        <div class="icon-tile"><i data-lucide="folder"></i> folder</div>
+        <div class="icon-tile"><i data-lucide="file-text"></i> file-text</div>
+        <div class="icon-tile"><i data-lucide="check"></i> check</div>
+        <div class="icon-tile"><i data-lucide="x"></i> x</div>
+        <div class="icon-tile"><i data-lucide="plus"></i> plus</div>
+        <div class="icon-tile"><i data-lucide="minus"></i> minus</div>
+        <div class="icon-tile"><i data-lucide="edit-3"></i> edit-3</div>
+        <div class="icon-tile"><i data-lucide="trash-2"></i> trash-2</div>
+        <div class="icon-tile"><i data-lucide="download"></i> download</div>
+        <div class="icon-tile"><i data-lucide="upload"></i> upload</div>
+        <div class="icon-tile"><i data-lucide="copy"></i> copy</div>
+        <div class="icon-tile"><i data-lucide="link"></i> link</div>
+        <div class="icon-tile"><i data-lucide="external-link"></i> external-link</div>
+        <div class="icon-tile"><i data-lucide="leaf"></i> leaf</div>
+        <div class="icon-tile"><i data-lucide="sparkles"></i> sparkles</div>
+        <div class="icon-tile"><i data-lucide="moon"></i> moon</div>
+        <div class="icon-tile"><i data-lucide="sun"></i> sun</div>
+        <div class="icon-tile"><i data-lucide="github"></i> github</div>
+        <div class="icon-tile"><i data-lucide="terminal"></i> terminal</div>
+      </div>
+    </section>
+
+    <!-- USAGE GUIDE -->
+    <section class="panel">
+      <div class="panel-title"><i data-lucide="book-open"></i> When to Use What</div>
+      <div class="row"><span class="label">h1</span><span class="text-secondary">Page title or hero — only one per page.</span></div>
+      <div class="row"><span class="label">h2</span><span class="text-secondary">Major sections within a page.</span></div>
+      <div class="row"><span class="label">h3</span><span class="text-secondary">Cards, modal titles, or sub-section headers. Uses accent color.</span></div>
+      <div class="row"><span class="label">h4</span><span class="text-secondary">Panel eyebrows / category labels (uppercase tracked).</span></div>
+      <div class="row"><span class="label">h5 / h6</span><span class="text-secondary">Micro-labels in dense UI — table headers, sidebar groups.</span></div>
+      <div class="row"><span class="label">p</span><span class="text-secondary">Body copy. Default. Don't use spans for paragraphs.</span></div>
+      <div class="row"><span class="label">span</span><span class="text-secondary">Inline emphasis via <code>.text-accent</code>, <code>.text-secondary</code>, <code>.text-muted</code>.</span></div>
+      <div class="row"><span class="label">button</span><span class="text-secondary">Primary for confirm/save, secondary for navigation, ghost for tertiary, icon for toolbar.</span></div>
+      <div class="row"><span class="label">a</span><span class="text-secondary">Dashed underline — feels handwritten and intentional.</span></div>
+      <div class="row"><span class="label">icons</span><span class="text-secondary">Lucide. 14px inside buttons/badges, 20px in nav, 28px for logo.</span></div>
+    </section>
+
+    <footer>
+      sheen.dev · Roboto Mono · 13px · Moss &amp; Olive theme · built {{year}}
+    </footer>
+
+  </div>
+
+<script>
+  // Lucide icons
+  lucide.createIcons();
+
+  // Theme switcher
+  const root = document.documentElement;
+  const btnDark = document.getElementById('theme-dark');
+  const btnLight = document.getElementById('theme-light');
+
+  function setTheme(mode) {
+    root.setAttribute('data-theme', mode);
+    btnDark.classList.toggle('active', mode === 'dark');
+    btnLight.classList.toggle('active', mode === 'light');
+    localStorage.setItem('sheen-theme', mode);
+  }
+
+  btnDark.addEventListener('click', () => setTheme('dark'));
+  btnLight.addEventListener('click', () => setTheme('light'));
+
+  const saved = localStorage.getItem('sheen-theme');
+  if (saved) setTheme(saved);
+
+  // Footer year
+  document.querySelector('footer').innerHTML =
+    document.querySelector('footer').innerHTML.replace('{{year}}', new Date().getFullYear());
+</script>
+</body>
+</html>

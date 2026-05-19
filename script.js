@@ -335,30 +335,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const td = document.createElement('td');
                 const input = document.createElement('input');
                 input.className = 'table-input';
-                
-                let val = item[key];
-                if (typeof val === 'object' && val !== null) {
-                    input.value = JSON.stringify(val);
-                } else {
-                    input.value = (val !== undefined) ? val : '';
-                }
-
+                input.value = (item[key] !== undefined) ? item[key] : '';
                 input.addEventListener('input', (e) => {
-                    let newVal = e.target.value;
-                    // Attempt to parse if it looks like JSON object/array
-                    if (newVal.trim().startsWith('{') || newVal.trim().startsWith('[')) {
-                        try {
-                            newVal = JSON.parse(newVal);
-                        } catch (err) {
-                            // Leave as string if not valid JSON
-                        }
-                    }
-                    
-                    if (Array.isArray(currentJsonData)) {
-                        currentJsonData[index][key] = newVal;
-                    } else {
-                        currentJsonData[key] = newVal;
-                    }
+                    if (Array.isArray(currentJsonData)) currentJsonData[index][key] = e.target.value;
+                    else currentJsonData[key] = e.target.value;
                     updateJsonOutput();
                 });
                 td.appendChild(input);
@@ -414,4 +394,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Lucide icons
+    lucide.createIcons();
+
+    // Theme switcher
+    const root = document.documentElement;
+    const btnDark = document.getElementById('theme-dark');
+    const btnLight = document.getElementById('theme-light');
+
+    function setTheme(mode) {
+        root.setAttribute('data-theme', mode);
+        btnDark.classList.toggle('active', mode === 'dark');
+        btnLight.classList.toggle('active', mode === 'light');
+        localStorage.setItem('sheen-theme', mode);
+    }
+
+    if(btnDark) btnDark.addEventListener('click', () => setTheme('dark'));
+    if(btnLight) btnLight.addEventListener('click', () => setTheme('light'));
+
+    const saved = localStorage.getItem('sheen-theme');
+    if (saved) setTheme(saved);
 });

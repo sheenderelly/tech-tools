@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Salesforce Icon Converter</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f3f3f3;
+    color: #16325c;
+    min-height: 100vh;
+  }
+  header {
+    background: #0070d2;
+    color: #fff;
+    padding: 18px 28px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
+
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 24px;
+  }
+  @media (max-width: 880px) { .container { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .panel h2 {
+    margin: 0 0 14px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #54698d;
+    font-weight: 600;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 14px 0 6px;
+    color: #54698d;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  label:first-child { margin-top: 0; }
+
+  input[type="text"], textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #d8dde6;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #16325c;
+    background: #fff;
+  }
+  input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: #1589ee;
+    box-shadow: 0 0 0 1px #1589ee;
+  }
+  textarea { resize: vertical; min-height: 160px; }
+
+  .palette {
+    display: grid;
+    grid-template-columns: repeat(22, 1fr);
+    gap: 0;
+    border: 1px solid #c8c8c8;
+    width: fit-content;
+    max-width: 100%;
+    background: #fff;
+  }
+  .swatch {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 0;
+    position: relative;
+  }
+  .swatch:hover {
+    outline: 2px solid #ffffff;
+    outline-offset: -2px;
+    box-shadow: 0 0 0 2px #16325c, 0 2px 6px rgba(0,0,0,0.4);
+    z-index: 2;
+  }
+  .swatch.selected {
+    outline: 2px solid #ffffff;
+    outline-offset: -2px;
+    box-shadow: 0 0 0 2px #16325c;
+    z-index: 1;
+  }
+  .selected-hex {
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    color: #54698d;
+    margin-top: 10px;
+  }
+  .hex-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #e5e5e5;
+  }
+  .hex-input-row label { font-size: 12px; color: #54698d; white-space: nowrap; }
+  .hex-input-row input {
+    width: 100px;
+    padding: 6px 8px;
+    font-family: 'Consolas', monospace;
+    text-transform: uppercase;
+  }
+  .swatch-preview {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid #d8dde6;
+    background: #0070D2;
+  }
+
+  .previews {
+    display: grid;
+    gap: 16px;
+  }
+  .preview-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+  }
+  .preview-card .canvas-wrap {
+    background-image:
+      linear-gradient(45deg, #e5e5e5 25%, transparent 25%),
+      linear-gradient(-45deg, #e5e5e5 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e5e5e5 75%),
+      linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+    border: 1px solid #d8dde6;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .preview-card canvas {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .preview-card .meta { font-size: 13px; }
+  .preview-card .meta .title { font-weight: 600; color: #16325c; }
+  .preview-card .meta .desc { color: #54698d; font-size: 12px; margin-top: 2px; }
+
+  button {
+    background: #0070d2;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  button:hover { background: #005fb2; }
+  button.secondary { background: #f4f6f9; color: #16325c; border: 1px solid #d8dde6; }
+  button.secondary:hover { background: #e5e9ef; }
+
+  .actions { margin-top: 16px; display: flex; gap: 8px; }
+
+  .error {
+    color: #c23934;
+    font-size: 13px;
+    background: #fee;
+    border: 1px solid #fcc;
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Salesforce Icon Converter</h1>
+  <p>Paste an SVG, pick a tab color, get PNGs for legacy custom tabs and LWC static resources.</p>
+</header>
+
+<div class="container">
+
+  <!-- LEFT: INPUTS -->
+  <div class="panel">
+    <h2>Input</h2>
+
+    <label for="iconName">Icon name (used for filenames)</label>
+    <input type="text" id="iconName" value="my_icon" autocomplete="off">
+
+    <label for="svgInput">SVG code</label>
+    <textarea id="svgInput" spellcheck="false"></textarea>
+    <div id="svgError" class="error"></div>
+
+    <label>Salesforce tab color</label>
+    <div class="palette" id="palette"></div>
+    <div class="hex-input-row">
+      <label for="hexInput" style="margin:0;">Or paste hex (from SF MotifColorPicker):</label>
+      <input type="text" id="hexInput" maxlength="7" placeholder="#0070D2" autocomplete="off">
+      <div class="swatch-preview" id="hexPreview"></div>
+    </div>
+    <div class="selected-hex" id="selectedHex"></div>
+
+    <div class="actions">
+      <button onclick="renderAll()">Re-render preview</button>
+      <button class="secondary" onclick="downloadAll()">Download all 3 PNGs</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: PREVIEWS -->
+  <div class="panel">
+    <h2>Output</h2>
+    <div class="previews">
+
+      <div class="preview-card">
+        <div class="canvas-wrap">
+          <canvas id="canvas16" width="16" height="16" style="width:64px;height:64px;"></canvas>
+        </div>
+        <div class="meta">
+          <div class="title">Legacy 16×16 PNG</div>
+          <div class="desc">For Setup &gt; Tabs &gt; Custom Tab (small icon). Transparent background.</div>
+        </div>
+        <button onclick="downloadCanvas('canvas16', '16x16')">Download</button>
+      </div>
+
+      <div class="preview-card">
+        <div class="canvas-wrap">
+          <canvas id="canvas32" width="32" height="32" style="width:96px;height:96px;"></canvas>
+        </div>
+        <div class="meta">
+          <div class="title">Legacy 32×32 PNG</div>
+          <div class="desc">For the New Tab splash page. Transparent background.</div>
+        </div>
+        <button onclick="downloadCanvas('canvas32', '32x32')">Download</button>
+      </div>
+
+      <div class="preview-card">
+        <div class="canvas-wrap">
+          <canvas id="canvasSlds" width="480" height="480" style="width:120px;height:120px;image-rendering:auto;"></canvas>
+        </div>
+        <div class="meta">
+          <div class="title">SLDS-style 480×480 PNG</div>
+          <div class="desc">Per SLDS spec: 60% live area, 20% padding. For LWC static resources, VFP, Aura.</div>
+        </div>
+        <button onclick="downloadCanvas('canvasSlds', 'slds')">Download</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ------- Salesforce legacy MotifColorPicker palette (356 swatches) -------
+// Extracted from the iwasaki-factory.my.salesforce-setup.com MotifColorPicker page.
+// Each entry: { id: "CustomNNN" — the SF motif name, hex: "#RRGGBB" }.
+const PALETTE = [{"id":"Custom1","hex":"#FF6D66"},{"id":"Custom2","hex":"#999900"},{"id":"Custom3","hex":"#CC9933"},{"id":"Custom4","hex":"#B0B057"},{"id":"Custom5","hex":"#77B900"},{"id":"Custom6","hex":"#60C060"},{"id":"Custom7","hex":"#204EA9"},{"id":"Custom8","hex":"#76B8AD"},{"id":"Custom9","hex":"#6AACD8"},{"id":"Custom10","hex":"#204EA9"},{"id":"Custom11","hex":"#9C9CC6"},{"id":"Custom12","hex":"#B975B9"},{"id":"Custom13","hex":"#996666"},{"id":"Custom14","hex":"#00655A"},{"id":"Custom15","hex":"#D95D2E"},{"id":"Custom16","hex":"#BFAF00"},{"id":"Custom17","hex":"#9C9C29"},{"id":"Custom18","hex":"#319431"},{"id":"Custom19","hex":"#027C6F"},{"id":"Custom20","hex":"#2AABAB"},{"id":"Custom21","hex":"#6666CC"},{"id":"Custom22","hex":"#3333CC"},{"id":"Custom23","hex":"#7325C2"},{"id":"Custom24","hex":"#A62264"},{"id":"Custom25","hex":"#B8338C"},{"id":"Custom26","hex":"#204EA9"},{"id":"Custom27","hex":"#006699"},{"id":"Custom28","hex":"#669900"},{"id":"Custom29","hex":"#999900"},{"id":"Custom30","hex":"#A16300"},{"id":"Custom31","hex":"#BA3B3B"},{"id":"Custom32","hex":"#009966"},{"id":"Custom33","hex":"#89B62E"},{"id":"Custom34","hex":"#C39567"},{"id":"Custom35","hex":"#CC6666"},{"id":"Custom36","hex":"#CC99CC"},{"id":"Custom37","hex":"#6262C4"},{"id":"Custom38","hex":"#3399CC"},{"id":"Custom39","hex":"#669966"},{"id":"Custom40","hex":"#999966"},{"id":"Custom41","hex":"#3D8D8D"},{"id":"Custom42","hex":"#B0B021"},{"id":"Custom43","hex":"#3366CC"},{"id":"Custom44","hex":"#999933"},{"id":"Custom45","hex":"#993333"},{"id":"Custom46","hex":"#6699CC"},{"id":"Custom47","hex":"#8AB64E"},{"id":"Custom48","hex":"#E56363"},{"id":"Custom49","hex":"#AF7070"},{"id":"Custom50","hex":"#3399CC"},{"id":"Custom51","hex":"#82750F"},{"id":"Custom52","hex":"#8C4400"},{"id":"Custom53","hex":"#FC4F59"},{"id":"Custom54","hex":"#8C004C"},{"id":"Custom55","hex":"#CB65FF"},{"id":"Custom56","hex":"#5B77CC"},{"id":"Custom57","hex":"#007FCC"},{"id":"Custom58","hex":"#007C66"},{"id":"Custom59","hex":"#6D6002"},{"id":"Custom60","hex":"#493533"},{"id":"Custom61","hex":"#6B3021"},{"id":"Custom62","hex":"#00335B"},{"id":"Custom63","hex":"#6B702B"},{"id":"Custom64","hex":"#00305E"},{"id":"Custom65","hex":"#702342"},{"id":"Custom66","hex":"#AA930A"},{"id":"Custom67","hex":"#4C280F"},{"id":"Custom68","hex":"#EF2B2D"},{"id":"Custom69","hex":"#E5053A"},{"id":"Custom70","hex":"#CE007C"},{"id":"Custom71","hex":"#72166B"},{"id":"Custom72","hex":"#3044B5"},{"id":"Custom73","hex":"#005B99"},{"id":"Custom74","hex":"#006854"},{"id":"Custom75","hex":"#998C7C"},{"id":"Custom76","hex":"#493533"},{"id":"Custom77","hex":"#512826"},{"id":"Custom78","hex":"#003F77"},{"id":"Custom79","hex":"#605E11"},{"id":"Custom80","hex":"#26547C"},{"id":"Custom81","hex":"#8E4749"},{"id":"Custom82","hex":"#A62264"},{"id":"Custom83","hex":"#FC8744"},{"id":"Custom84","hex":"#E23D28"},{"id":"Custom85","hex":"#E00747"},{"id":"Custom86","hex":"#8E0554"},{"id":"Custom87","hex":"#930FA5"},{"id":"Custom88","hex":"#38197A"},{"id":"Custom89","hex":"#004F6D"},{"id":"Custom90","hex":"#006B54"},{"id":"Custom91","hex":"#827566"},{"id":"Custom92","hex":"#565959"},{"id":"Custom93","hex":"#441E1C"},{"id":"Custom94","hex":"#003F54"},{"id":"Custom95","hex":"#75702B"},{"id":"Custom96","hex":"#335687"},{"id":"Custom97","hex":"#7F383A"},{"id":"Custom98","hex":"#AA8E0A"},{"id":"Custom99","hex":"#F96B07"},{"id":"Custom100","hex":"#C13828"},{"id":"Custom101","hex":"#82750F"},{"id":"Custom102","hex":"#8C4400"},{"id":"Custom103","hex":"#FC4F59"},{"id":"Custom104","hex":"#E5053A"},{"id":"Custom105","hex":"#8C004C"},{"id":"Custom106","hex":"#9E4FA5"},{"id":"Custom107","hex":"#5B77CC"},{"id":"Custom108","hex":"#007FCC"},{"id":"Custom109","hex":"#007C66"},{"id":"Custom110","hex":"#6D6002"},{"id":"Custom111","hex":"#493533"},{"id":"Custom112","hex":"#6B3021"},{"id":"Custom113","hex":"#00335B"},{"id":"Custom114","hex":"#6B702B"},{"id":"Custom115","hex":"#00305E"},{"id":"Custom116","hex":"#702342"},{"id":"Custom117","hex":"#AA930A"},{"id":"Custom118","hex":"#4C280F"},{"id":"Custom119","hex":"#EF2B2D"},{"id":"Custom120","hex":"#E5053A"},{"id":"Custom121","hex":"#CE007C"},{"id":"Custom122","hex":"#72166B"},{"id":"Custom123","hex":"#3044B5"},{"id":"Custom124","hex":"#005B99"},{"id":"Custom125","hex":"#006854"},{"id":"Custom126","hex":"#998C7C"},{"id":"Custom127","hex":"#493533"},{"id":"Custom128","hex":"#512826"},{"id":"Custom129","hex":"#003F77"},{"id":"Custom130","hex":"#605E11"},{"id":"Custom131","hex":"#26547C"},{"id":"Custom132","hex":"#8E4749"},{"id":"Custom133","hex":"#C6A00C"},{"id":"Custom134","hex":"#FC8744"},{"id":"Custom135","hex":"#E23D28"},{"id":"Custom136","hex":"#E00747"},{"id":"Custom137","hex":"#8E0554"},{"id":"Custom138","hex":"#930FA5"},{"id":"Custom139","hex":"#38197A"},{"id":"Custom140","hex":"#004F6D"},{"id":"Custom141","hex":"#006B54"},{"id":"Custom142","hex":"#827566"},{"id":"Custom143","hex":"#565959"},{"id":"Custom144","hex":"#441E1C"},{"id":"Custom145","hex":"#003F54"},{"id":"Custom146","hex":"#75702B"},{"id":"Custom147","hex":"#335687"},{"id":"Custom148","hex":"#7F383A"},{"id":"Custom149","hex":"#AA8E0A"},{"id":"Custom150","hex":"#F96B07"},{"id":"Custom151","hex":"#C13828"},{"id":"Custom152","hex":"#992135"},{"id":"Custom153","hex":"#ED4FAF"},{"id":"Custom154","hex":"#66008C"},{"id":"Custom155","hex":"#2D008E"},{"id":"Custom156","hex":"#004454"},{"id":"Custom157","hex":"#024930"},{"id":"Custom158","hex":"#6B5E4F"},{"id":"Custom159","hex":"#3F3F38"},{"id":"Custom160","hex":"#7A382D"},{"id":"Custom161","hex":"#004459"},{"id":"Custom162","hex":"#D3BF11"},{"id":"Custom163","hex":"#0F2B5B"},{"id":"Custom164","hex":"#B73844"},{"id":"Custom165","hex":"#B58C0A"},{"id":"Custom166","hex":"#C66005"},{"id":"Custom167","hex":"#AF2626"},{"id":"Custom168","hex":"#931638"},{"id":"Custom169","hex":"#C4057C"},{"id":"Custom170","hex":"#5E2154"},{"id":"Custom171","hex":"#3F2893"},{"id":"Custom172","hex":"#007AA5"},{"id":"Custom173","hex":"#008751"},{"id":"Custom174","hex":"#66594C"},{"id":"Custom175","hex":"#54472D"},{"id":"Custom176","hex":"#6D332B"},{"id":"Custom177","hex":"#3A564F"},{"id":"Custom178","hex":"#AFA00C"},{"id":"Custom179","hex":"#0C1C47"},{"id":"Custom180","hex":"#9E2828"},{"id":"Custom181","hex":"#9E7C0A"},{"id":"Custom182","hex":"#633A11"},{"id":"Custom183","hex":"#7C211E"},{"id":"Custom184","hex":"#772D35"},{"id":"Custom185","hex":"#A8007A"},{"id":"Custom186","hex":"#602D59"},{"id":"Custom187","hex":"#141654"},{"id":"Custom188","hex":"#003F49"},{"id":"Custom189","hex":"#234F33"},{"id":"Custom190","hex":"#3D3028"},{"id":"Custom191","hex":"#BCAD75"},{"id":"Custom192","hex":"#7A2638"},{"id":"Custom193","hex":"#00353A"},{"id":"Custom194","hex":"#847711"},{"id":"Custom195","hex":"#5930A8"},{"id":"Custom196","hex":"#0E4251"},{"id":"Custom197","hex":"#705B0A"},{"id":"Custom198","hex":"#843F0F"},{"id":"Custom199","hex":"#CE1126"},{"id":"Custom200","hex":"#8C2633"},{"id":"Custom201","hex":"#7C1C51"},{"id":"Custom202","hex":"#5B195E"},{"id":"Custom203","hex":"#14213D"},{"id":"Custom204","hex":"#009BAA"},{"id":"Custom205","hex":"#007A3D"},{"id":"Custom206","hex":"#777263"},{"id":"Custom207","hex":"#665614"},{"id":"Custom208","hex":"#602144"},{"id":"Custom209","hex":"#5E99AA"},{"id":"Custom210","hex":"#21543F"},{"id":"Custom211","hex":"#2D338E"},{"id":"Custom212","hex":"#D12D33"},{"id":"Custom213","hex":"#E28C05"},{"id":"Custom214","hex":"#F97242"},{"id":"Custom215","hex":"#AF1E2D"},{"id":"Custom216","hex":"#8E2344"},{"id":"Custom217","hex":"#87005B"},{"id":"Custom218","hex":"#9663C4"},{"id":"Custom219","hex":"#6689CC"},{"id":"Custom220","hex":"#006B77"},{"id":"Custom221","hex":"#215B33"},{"id":"Custom222","hex":"#605E4F"},{"id":"Custom223","hex":"#5B4723"},{"id":"Custom224","hex":"#84216B"},{"id":"Custom225","hex":"#234435"},{"id":"Custom226","hex":"#0C3026"},{"id":"Custom227","hex":"#0C1975"},{"id":"Custom228","hex":"#F28411"},{"id":"Custom229","hex":"#CC7A02"},{"id":"Custom230","hex":"#F96302"},{"id":"Custom231","hex":"#7C2128"},{"id":"Custom232","hex":"#D30547"},{"id":"Custom233","hex":"#B7008E"},{"id":"Custom234","hex":"#894FBF"},{"id":"Custom235","hex":"#3A75C4"},{"id":"Custom236","hex":"#00565B"},{"id":"Custom237","hex":"#3A7728"},{"id":"Custom238","hex":"#282821"},{"id":"Custom239","hex":"#472311"},{"id":"Custom240","hex":"#936B7F"},{"id":"Custom241","hex":"#234435"},{"id":"Custom242","hex":"#00A0BA"},{"id":"Custom243","hex":"#7F6689"},{"id":"Custom244","hex":"#D36D00"},{"id":"Custom245","hex":"#AF7505"},{"id":"Custom246","hex":"#BC4F07"},{"id":"Custom247","hex":"#F4476B"},{"id":"Custom248","hex":"#EA0F68"},{"id":"Custom249","hex":"#7F2860"},{"id":"Custom250","hex":"#6D28AA"},{"id":"Custom251","hex":"#00337F"},{"id":"Custom252","hex":"#00494F"},{"id":"Custom253","hex":"#56AA1C"},{"id":"Custom254","hex":"#60605B"},{"id":"Custom255","hex":"#704214"},{"id":"Custom256","hex":"#593344"},{"id":"Custom257","hex":"#076D54"},{"id":"Custom258","hex":"#007F99"},{"id":"Custom259","hex":"#664975"},{"id":"Custom260","hex":"#BF5B00"},{"id":"Custom261","hex":"#7A5B11"},{"id":"Custom262","hex":"#843511"},{"id":"Custom263","hex":"#E00747"},{"id":"Custom264","hex":"#CC0256"},{"id":"Custom265","hex":"#D36BC6"},{"id":"Custom266","hex":"#59118E"},{"id":"Custom267","hex":"#002654"},{"id":"Custom268","hex":"#007272"},{"id":"Custom269","hex":"#566B21"},{"id":"Custom270","hex":"#919693"},{"id":"Custom271","hex":"#B28260"},{"id":"Custom272","hex":"#63305E"},{"id":"Custom273","hex":"#2B4C3F"},{"id":"Custom274","hex":"#00667F"},{"id":"Custom275","hex":"#472B59"},{"id":"Custom276","hex":"#BA7530"},{"id":"Custom277","hex":"#9E6B05"},{"id":"Custom278","hex":"#6D3011"},{"id":"Custom279","hex":"#992135"},{"id":"Custom280","hex":"#7C1E3F"},{"id":"Custom281","hex":"#772D6B"},{"id":"Custom282","hex":"#4F2170"},{"id":"Custom283","hex":"#008ED6"},{"id":"Custom284","hex":"#007F82"},{"id":"Custom285","hex":"#566314"},{"id":"Custom286","hex":"#666D70"},{"id":"Custom287","hex":"#603311"},{"id":"Custom288","hex":"#35264F"},{"id":"Custom289","hex":"#546856"},{"id":"Custom290","hex":"#00A0C4"},{"id":"Custom291","hex":"#BC3877"},{"id":"Custom292","hex":"#8E4905"},{"id":"Custom293","hex":"#F77F00"},{"id":"Custom294","hex":"#F74902"},{"id":"Custom295","hex":"#772D35"},{"id":"Custom296","hex":"#AA004F"},{"id":"Custom297","hex":"#BA7CBC"},{"id":"Custom298","hex":"#44235E"},{"id":"Custom299","hex":"#0051BA"},{"id":"Custom300","hex":"#00B2AA"},{"id":"Custom301","hex":"#939905"},{"id":"Custom302","hex":"#444F51"},{"id":"Custom303","hex":"#A34402"},{"id":"Custom304","hex":"#493D63"},{"id":"Custom305","hex":"#1E7A6D"},{"id":"Custom306","hex":"#007F99"},{"id":"Custom307","hex":"#A00054"},{"id":"Custom308","hex":"#8D4803"},{"id":"Custom309","hex":"#DD7500"},{"id":"Custom310","hex":"#D14414"},{"id":"Custom311","hex":"#8E2344"},{"id":"Custom312","hex":"#ED2893"},{"id":"Custom313","hex":"#AA72BF"},{"id":"Custom314","hex":"#8977BA"},{"id":"Custom315","hex":"#0054A0"},{"id":"Custom316","hex":"#007770"},{"id":"Custom317","hex":"#707014"},{"id":"Custom318","hex":"#30383A"},{"id":"Custom319","hex":"#7C513D"},{"id":"Custom320","hex":"#353F5B"},{"id":"Custom321","hex":"#265412"},{"id":"Custom322","hex":"#00667F"},{"id":"Custom323","hex":"#A05175"},{"id":"Custom324","hex":"#753802"},{"id":"Custom325","hex":"#B55400"},{"id":"Custom326","hex":"#933311"},{"id":"Custom327","hex":"#FC758E"},{"id":"Custom328","hex":"#AD005B"},{"id":"Custom329","hex":"#9B4F96"},{"id":"Custom330","hex":"#937ACC"},{"id":"Custom331","hex":"#003F87"},{"id":"Custom332","hex":"#006056"},{"id":"Custom333","hex":"#848205"},{"id":"Custom334","hex":"#8C706B"},{"id":"Custom335","hex":"#593D2B"},{"id":"Custom336","hex":"#3A4972"},{"id":"Custom337","hex":"#495928"},{"id":"Custom338","hex":"#5E82A3"},{"id":"Custom339","hex":"#7F284F"},{"id":"Custom340","hex":"#723F0A"},{"id":"Custom341","hex":"#C66005"},{"id":"Custom342","hex":"#F95E59"},{"id":"Custom343","hex":"#F4476B"},{"id":"Custom344","hex":"#70193D"},{"id":"Custom345","hex":"#AA47BA"},{"id":"Custom346","hex":"#6656BC"},{"id":"Custom347","hex":"#003D6B"},{"id":"Custom348","hex":"#00493F"},{"id":"Custom349","hex":"#998C0A"},{"id":"Custom350","hex":"#593F3D"},{"id":"Custom351","hex":"#7A3F28"},{"id":"Custom352","hex":"#003049"},{"id":"Custom353","hex":"#424716"},{"id":"Custom354","hex":"#26547C"},{"id":"Custom355","hex":"#934266"},{"id":"Custom356","hex":"#60330A"}];
+
+let currentColor = PALETTE[6].hex; // Custom7 — a deep blue close to SF brand
+let renderTimer = null;
+
+// ------- Default sample SVG (Lucide-style "file" icon) -------
+const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0070D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="9" y1="13" x2="15" y2="13"/>
+  <line x1="9" y1="17" x2="15" y2="17"/>
+</svg>`;
+
+// ------- Build palette UI -------
+const paletteEl = document.getElementById('palette');
+PALETTE.forEach(({ id, hex }) => {
+  const sw = document.createElement('div');
+  sw.className = 'swatch' + (hex === currentColor ? ' selected' : '');
+  sw.style.background = hex;
+  sw.dataset.color = hex;
+  sw.dataset.id = id;
+  sw.title = `${id} — ${hex}`;
+  sw.addEventListener('click', () => {
+    currentColor = hex;
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    sw.classList.add('selected');
+    document.getElementById('selectedHex').textContent = `Selected: ${id} — ${hex}`;
+    document.getElementById('hexInput').value = hex;
+    document.getElementById('hexPreview').style.background = hex;
+    renderAll();
+  });
+  paletteEl.appendChild(sw);
+});
+const initial = PALETTE.find(p => p.hex === currentColor);
+document.getElementById('selectedHex').textContent =
+  `Selected: ${initial ? initial.id + ' — ' : ''}${currentColor}`;
+document.getElementById('hexInput').value = currentColor;
+document.getElementById('hexPreview').style.background = currentColor;
+
+// ------- Hex input wires up to currentColor -------
+document.getElementById('hexInput').addEventListener('input', (e) => {
+  let v = e.target.value.trim().toUpperCase();
+  if (v && !v.startsWith('#')) v = '#' + v;
+  if (/^#[0-9A-F]{6}$/.test(v)) {
+    currentColor = v;
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+    const match = PALETTE.find(p => p.hex === v);
+    if (match) {
+      const swEl = document.querySelector(`.swatch[data-id="${match.id}"]`);
+      if (swEl) swEl.classList.add('selected');
+    }
+    document.getElementById('hexPreview').style.background = v;
+    document.getElementById('selectedHex').textContent =
+      `Selected: ${match ? match.id + ' — ' : ''}${v}`;
+    renderAll();
+  }
+});
+
+// ------- Initialize textarea with sample -------
+document.getElementById('svgInput').value = SAMPLE_SVG;
+
+// ------- Debounced re-render on input -------
+document.getElementById('svgInput').addEventListener('input', () => {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(renderAll, 250);
+});
+
+// ------- Make sure SVG has explicit width/height so canvas can size it -------
+function normalizeSvg(svgText) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(svgText, 'image/svg+xml');
+  const err = doc.querySelector('parsererror');
+  if (err) throw new Error('Invalid SVG: ' + err.textContent.split('\n')[0]);
+  const svg = doc.documentElement;
+  if (svg.tagName.toLowerCase() !== 'svg') throw new Error('Root element must be <svg>');
+  if (!svg.getAttribute('xmlns')) svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  if (!svg.hasAttribute('width') || !svg.hasAttribute('height')) {
+    if (svg.hasAttribute('viewBox')) {
+      const vb = svg.getAttribute('viewBox').split(/[\s,]+/);
+      if (vb.length === 4) {
+        svg.setAttribute('width', vb[2]);
+        svg.setAttribute('height', vb[3]);
+      }
+    } else {
+      svg.setAttribute('width', '24');
+      svg.setAttribute('height', '24');
+    }
+  }
+  return new XMLSerializer().serializeToString(svg);
+}
+
+function svgToImage(svgText) {
+  return new Promise((resolve, reject) => {
+    const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load SVG as image')); };
+    img.src = url;
+  });
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function renderLegacy(canvasId, img, size) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+  ctx.drawImage(img, 0, 0, size, size);
+}
+
+function renderSlds(canvasId, img, size, color) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+
+  // Rounded color square (~15% corner radius — matches SLDS standard icons)
+  const radius = Math.round(size * 0.15);
+  ctx.fillStyle = color;
+  roundRectPath(ctx, 0, 0, size, size, radius);
+  ctx.fill();
+
+  // SLDS spec: live area = 60% of canvas, 20% padding on each side.
+  // (Authoring canvas in SLDS is 100×100 with a 60×60 live area centered.)
+  const glyphSize = Math.round(size * 0.60);
+  const glyphX = Math.round((size - glyphSize) / 2); // = 20% padding
+  const glyphY = Math.round((size - glyphSize) / 2);
+
+  // Offscreen canvas to white-tint the glyph using source-in compositing
+  const off = document.createElement('canvas');
+  off.width = glyphSize;
+  off.height = glyphSize;
+  const offCtx = off.getContext('2d');
+  offCtx.drawImage(img, 0, 0, glyphSize, glyphSize);
+  offCtx.globalCompositeOperation = 'source-in';
+  offCtx.fillStyle = '#ffffff';
+  offCtx.fillRect(0, 0, glyphSize, glyphSize);
+
+  ctx.drawImage(off, glyphX, glyphY);
+}
+
+async function renderAll() {
+  const errEl = document.getElementById('svgError');
+  errEl.style.display = 'none';
+  try {
+    const raw = document.getElementById('svgInput').value;
+    if (!raw.trim()) return;
+    const normalized = normalizeSvg(raw);
+    const img = await svgToImage(normalized);
+    renderLegacy('canvas16', img, 16);
+    renderLegacy('canvas32', img, 32);
+    renderSlds('canvasSlds', img, 480, currentColor);
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function downloadCanvas(canvasId, suffix) {
+  const canvas = document.getElementById(canvasId);
+  const name = (document.getElementById('iconName').value || 'icon').trim().replace(/\s+/g, '_');
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${name}_${suffix}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+}
+
+function downloadAll() {
+  downloadCanvas('canvas16', '16x16');
+  setTimeout(() => downloadCanvas('canvas32', '32x32'), 150);
+  setTimeout(() => downloadCanvas('canvasSlds', 'slds'), 300);
+}
+
+// Initial render
+renderAll();
+</script>
+
+</body>
+</html>
