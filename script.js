@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements - Menus
     const textToolsMenu = document.getElementById('text-tools-menu');
     const numberToolsMenu = document.getElementById('number-tools-menu');
-    const jsonToolsMenu = document.getElementById('json-tools-menu');
     const salesforceToolsMenu = document.getElementById('salesforce-tools-menu');
     const nihonToolsMenu = document.getElementById('nihon-tools-menu');
     // Default starting menu
@@ -67,17 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneOutput = document.getElementById('phone-output');
     const btnCopyPhone = document.getElementById('btn-copy-phone');
 
-    // JSON Tool Views & Elements
-    const jsonEditorView = document.getElementById('json-editor-view');
-    const jsonEditorCard = document.querySelector('[data-tool="json-editor"]');
-    const jsonInput = document.getElementById('json-input');
-    const jsonOutput = document.getElementById('json-output');
-    const btnVisualizeJson = document.getElementById('btn-visualize-json');
-    const btnFormatJson = document.getElementById('btn-format-json');
-    const jsonVisualizerContainer = document.getElementById('json-visualizer-container');
-    const jsonTable = document.getElementById('json-table');
-    const btnAddRow = document.getElementById('btn-add-row');
-
     // Back Buttons
     const backBtns = document.querySelectorAll('.back-btn');
 
@@ -88,8 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         hasSpace: false
     };
 
-    // JSON state
-    let currentJsonData = null;
 
     /**
      * Navigation helper to show a specific view and hide all others
@@ -121,8 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentMenu = numberToolsMenu;
             } else if (category === 'salesforce') {
                 currentMenu = salesforceToolsMenu;
-            } else if (category === 'json') {
-                currentMenu = jsonToolsMenu;
             } else if (category === 'nihon') {
                 currentMenu = nihonToolsMenu;
             }
@@ -150,13 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
         phoneFormatterCard.addEventListener('click', () => {
             showView(phoneFormatterView);
             if (phoneInput) phoneInput.focus();
-        });
-    }
-
-    if (jsonEditorCard) {
-        jsonEditorCard.addEventListener('click', () => {
-            showView(jsonEditorView);
-            if (jsonInput) jsonInput.focus();
         });
     }
 
@@ -297,95 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnCopyPhone.textContent = 'Copied!';
                     setTimeout(() => { btnCopyPhone.textContent = originalText; }, 2000);
                 });
-            }
-        });
-    }
-
-    // 4. JSON Editor Tool
-    function updateJsonOutput() {
-        if (jsonOutput) {
-            jsonOutput.value = JSON.stringify(currentJsonData, null, 2);
-        }
-    }
-
-    function renderJsonTable(data) {
-        if (!jsonTable) return;
-        jsonTable.innerHTML = ''; // Clear table
-        const dataArray = Array.isArray(data) ? data : [data];
-        if (dataArray.length === 0) return;
-
-        const keyList = Array.from(dataArray.reduce((keys, item) => {
-            Object.keys(item).forEach(key => keys.add(key));
-            return keys;
-        }, new Set()));
-
-        // Header
-        const thead = document.createElement('thead');
-        const trHead = document.createElement('tr');
-        keyList.forEach(key => {
-            const th = document.createElement('th');
-            th.textContent = key;
-            trHead.appendChild(th);
-        });
-        thead.appendChild(trHead);
-        jsonTable.appendChild(thead);
-
-        // Body
-        const tbody = document.createElement('tbody');
-        dataArray.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            keyList.forEach(key => {
-                const td = document.createElement('td');
-                const input = document.createElement('input');
-                input.className = 'table-input';
-                input.value = (item[key] !== undefined) ? item[key] : '';
-                input.addEventListener('input', (e) => {
-                    if (Array.isArray(currentJsonData)) currentJsonData[index][key] = e.target.value;
-                    else currentJsonData[key] = e.target.value;
-                    updateJsonOutput();
-                });
-                td.appendChild(input);
-                tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-        });
-        jsonTable.appendChild(tbody);
-    }
-
-    if (btnVisualizeJson) {
-        btnVisualizeJson.addEventListener('click', () => {
-            try {
-                currentJsonData = JSON.parse(jsonInput.value);
-                renderJsonTable(currentJsonData);
-                if (jsonVisualizerContainer) {
-                    jsonVisualizerContainer.classList.remove('view-hidden');
-                }
-                updateJsonOutput();
-            } catch (e) {
-                alert('Invalid JSON: ' + e.message);
-            }
-        });
-    }
-
-    if (btnFormatJson) {
-        btnFormatJson.addEventListener('click', () => {
-            try {
-                const parsed = JSON.parse(jsonInput.value);
-                jsonInput.value = JSON.stringify(parsed, null, 2);
-            } catch (e) {
-                alert('Invalid JSON: ' + e.message);
-            }
-        });
-    }
-
-    if (btnAddRow) {
-        btnAddRow.addEventListener('click', () => {
-            if (Array.isArray(currentJsonData)) {
-                const newRow = {};
-                if (currentJsonData.length > 0) Object.keys(currentJsonData[0]).forEach(k => newRow[k] = '');
-                currentJsonData.push(newRow);
-                renderJsonTable(currentJsonData);
-                updateJsonOutput();
             }
         });
     }
