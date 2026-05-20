@@ -1,379 +1,432 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Developer Tools</title>
-    <meta name="description" content="A simple collection of developer tools.">
-    <link rel="stylesheet" href="style.css?v=6">
-    <!-- Google Fonts for modern typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevTools — sheen.dev</title>
+  <meta name="description" content="A simple collection of developer tools.">
+  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="brand-mark">
-                    <i data-lucide="leaf"></i>
-                    <h1>DevTools</h1>
-                </div>
-                <div class="theme-switch" role="group" aria-label="Theme toggle">
-                    <button id="theme-dark" class="active" type="button">
-                      <i data-lucide="moon"></i>
-                    </button>
-                    <button id="theme-light" type="button">
-                      <i data-lucide="sun"></i>
-                    </button>
-                </div>
-            </div>
-            <nav class="sidebar-nav">
-                <div class="category-header">Tools</div>
-                <ul class="nav-list">
-                    <li class="nav-item active" data-category="text">
-                        <span class="icon">Aa</span>
-                        <span class="label">TEXT</span>
-                    </li>
-                    <li class="nav-item" data-category="number">
-                        <span class="icon">#</span>
-                        <span class="label">NUMBER</span>
-                    </li>
-                    <li class="nav-item" data-category="salesforce">
-                        <span class="icon">SF</span>
-                        <span class="label">SALESFORCE</span>
-                    </li>
-                    <li class="nav-item" data-category="json">
-                        <span class="icon">{ }</span>
-                        <span class="label">JSON</span>
-                    </li>
-                    <!-- Add more categories here in the future -->
-                </ul>
-            </nav>
-        </aside>
-        
-        <main class="main-content">
-            <!-- Tools Menu Area -->
-            <!-- Text Tools Menu Area -->
-            <div id="text-tools-menu" class="tools-menu view-active">
-                <h2 id="current-category-title-text">Text Tools</h2>
-                <div class="tools-grid" id="text-tools-grid">
-                    <div class="panel tool-card" data-tool="change-case">
-                        <div class="tool-icon">Aa</div>
-                        <div class="tool-details">
-                            <h3>Change Case</h3>
-                            <p>Convert text between different letter cases.</p>
-                        </div>
-                    </div>
 
-                    <div class="panel tool-card" data-tool="kana-width-converter">
-                        <div class="tool-icon">あ</div>
-                        <div class="tool-details">
-                            <h3>Kana Width</h3>
-                            <p>Convert English letters and numbers to full-width or half-width.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Number Tools Menu Area -->
-            <div id="number-tools-menu" class="tools-menu view-hidden">
-                <h2 id="current-category-title-number">Number Tools</h2>
-                <div class="tools-grid" id="number-tools-grid">
-                    <div class="panel tool-card" data-tool="phone-formatter">
-                        <div class="tool-icon">☎</div>
-                        <div class="tool-details">
-                            <h3>Phone</h3>
-                            <p>Format phone numbers with country codes and hyphens.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Salesforce Tools Menu Area -->
-            <div id="salesforce-tools-menu" class="tools-menu view-hidden">
-                <h2>Salesforce Tools</h2>
-                <div class="tools-grid">
-                    <div class="panel tool-card" data-tool="create-icons">
-                        <div class="tool-icon">★</div>
-                        <div class="tool-details">
-                            <h3>Create Icons</h3>
-                            <p>Generate icons for Salesforce components.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- JSON Tools Menu Area -->
-            <div id="json-tools-menu" class="tools-menu view-hidden">
-                <h2 id="current-category-title-json">JSON Tools</h2>
-                <div class="tools-grid" id="json-tools-grid">
-                    <div class="panel tool-card" data-tool="json-editor">
-                        <div class="tool-icon">{ }</div>
-                        <div class="tool-details">
-                            <h3>JSON Editor</h3>
-                            <p>Parse, visualize as a table, and edit your JSON data.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Specific Tool View: Change Case -->
-            <div id="change-case-view" class="tool-view view-hidden">
-                <div class="view-header">
-                    <button class="back-btn" id="back-to-menu-btn">
-                        <i data-lucide="arrow-left"></i>
-                        Back
-                    </button>
-                    <h2>Change Case</h2>
-                </div>
-                
-                <div class="tool-body">
-                    <div class="btn-row">
-                        <button class="btn btn-secondary" id="btn-uppercase">UPPERCASE</button>
-                        <button class="btn btn-secondary" id="btn-lowercase">lowercase</button>
-                        <button class="btn btn-secondary" id="btn-sentencecase">Sentence case</button>
-                    </div>
-                    <div class="textarea-container">
-                        <textarea id="case-input" placeholder="Type or paste your text here..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Specific Tool View: Kana Width Converter -->
-            <div id="kana-width-view" class="tool-view view-hidden">
-                <div class="view-header">
-                    <button class="back-btn" id="back-to-menu-btn-kana">
-                        <i data-lucide="arrow-left"></i>
-                        Back
-                    </button>
-                    <h2>Kana Width Converter</h2>
-                </div>
-                
-                <div class="tool-body">
-                    <div class="btn-row">
-                        <button class="btn btn-secondary" id="btn-to-full-width">To Full-width</button>
-                        <button class="btn btn-secondary" id="btn-to-half-width">To Half-width</button>
-                    </div>
-                    <div class="textarea-container">
-                        <textarea id="kana-input" placeholder="Type or paste your text here (letters, numbers, symbols, kana)..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Specific Tool View: Phone Formatter -->
-            <div id="phone-formatter-view" class="tool-view view-hidden">
-                <div class="view-header">
-                    <button class="back-btn" id="back-to-menu-btn-phone">
-                        <i data-lucide="arrow-left"></i>
-                        Back
-                    </button>
-                    <h2>Phone Formatter</h2>
-                </div>
-                
-                <div class="tool-body">
-                    <div class="panel controls-container">
-                        <div class="field">
-                            <label for="country-select">Country Selector</label>
-                            <select id="country-select">
-                                <option value="JP">Japan (JP) +81</option>
-                                <option value="PH">Philippines (PH) +63</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Format Options</label>
-                            <div class="btn-row">
-                                <button class="badge-toggle" id="toggle-country-code">Include Country Code</button>
-                                <button class="badge-toggle" id="toggle-hyphens">Use Hyphens</button>
-                                <button class="badge-toggle" id="toggle-spaces">Use Space</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="side-by-side-container">
-                        <div class="textarea-container input-container">
-                            <label for="phone-input">Raw Number(s)</label>
-                            <textarea id="phone-input" placeholder="e.g. 08080069955&#10;09012345678" rows="8"></textarea>
-                        </div>
-                        <div class="textarea-container output-container">
-                            <div class="output-header">
-                                <label for="phone-output">Formatted Result</label>
-                                <button class="btn btn-ghost" id="btn-copy-phone">Copy All</button>
-                            </div>
-                            <textarea id="phone-output" readonly placeholder="Results will appear here..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Specific Tool View: Create Icons -->
-            <div id="create-icons-view" class="tool-view view-hidden">
-                <div class="view-header">
-                    <button class="back-btn" id="back-to-menu-btn-icons">
-                        <i data-lucide="arrow-left"></i>
-                        Back
-                    </button>
-                    <h2>Create Salesforce Icons</h2>
-                </div>
-
-                <div class="tool-body">
-                    <div class="sf-icon-grid">
-                        <div class="sf-panel">
-                            <h3 class="sf-panel-title">Input</h3>
-
-                            <label for="iconName" class="sf-label">Icon name (used for filenames &amp; static resource)</label>
-                            <input type="text" id="iconName" class="sf-input" value="my_icon" autocomplete="off" placeholder="lowercase_with_underscores">
-                            <div class="sf-hint">Conventions: lowercase with underscores, no spaces, no leading digit, e.g. <code>account_brief_icon</code>.</div>
-
-                            <label for="iconSize" class="sf-label">Display / PNG size (px)</label>
-                            <input type="number" id="iconSize" class="sf-input sf-size-input" value="60" min="16" max="480" step="1" autocomplete="off">
-                            <div class="sf-hint">Drives the transparent PNG dimensions and the <code>width</code>/<code>height</code> in the snippets below. 60 fits the Lightning Custom Image upload; 120+ is safer for high-DPI.</div>
-
-                            <label for="svgInput" class="sf-label">SVG code</label>
-                            <textarea id="svgInput" class="sf-textarea" spellcheck="false"></textarea>
-                            <div id="svgError" class="sf-error"></div>
-
-                            <label for="hexInput" class="sf-label">SLDS background color (hex)</label>
-                            <div class="sf-hex-row">
-                                <input type="text" id="hexInput" class="sf-input sf-hex-input" maxlength="7" placeholder="#0070D2" autocomplete="off">
-                                <div class="sf-swatch-preview" id="hexPreview"></div>
-                            </div>
-
-                            <div class="btn-row" style="margin-top: 20px;">
-                                <button class="btn btn-primary" id="btn-render-icons">Re-render preview</button>
-                                <button class="btn btn-secondary" id="btn-download-all-icons">Download all PNGs</button>
-                            </div>
-                        </div>
-
-                        <div class="sf-panel">
-                            <h3 class="sf-panel-title">Output</h3>
-                            <div class="sf-previews">
-                                <div class="sf-preview-card">
-                                    <div class="sf-canvas-wrap">
-                                        <canvas id="canvasFlat" width="60" height="60" style="width:96px;height:96px;"></canvas>
-                                    </div>
-                                    <div class="sf-preview-meta">
-                                        <div class="sf-preview-title">Flat <span class="sf-size-echo">60</span>×<span class="sf-size-echo">60</span> PNG</div>
-                                        <div class="sf-preview-desc">Transparent background. For <strong>Custom Image</strong> tab icons.</div>
-                                    </div>
-                                    <button class="btn btn-ghost" data-download="canvasFlat" data-suffix="flat">Download</button>
-                                </div>
-                                <div class="sf-preview-card">
-                                    <div class="sf-canvas-wrap">
-                                        <canvas id="canvasSlds" width="480" height="480" style="width:120px;height:120px;image-rendering:auto;"></canvas>
-                                    </div>
-                                    <div class="sf-preview-meta">
-                                        <div class="sf-preview-title">SLDS 480×480 PNG</div>
-                                        <div class="sf-preview-desc">For LWC. Upload as a <strong>Static Resource</strong> named <code class="sf-name-echo">my_icon</code>.</div>
-                                    </div>
-                                    <button class="btn btn-ghost" data-download="canvasSlds" data-suffix="slds">Download</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sf-panel sf-usage-section">
-                        <h3 class="sf-panel-title">How to reference the icon</h3>
-                        <p class="sf-usage-intro">
-                            Upload <code class="sf-name-echo">my_icon</code>_slds.png as a Static Resource named
-                            <code class="sf-name-echo">my_icon</code> (Cache Control: Public), then paste one of the snippets below.
-                        </p>
-
-                        <div class="sf-snippet-grid">
-                            <div class="sf-snippet">
-                                <div class="sf-snippet-head">
-                                    <span class="sf-snippet-label">LWC — template</span>
-                                    <button class="btn btn-ghost" data-copy-target="snippet-lwc-html">Copy</button>
-                                </div>
-                                <pre><code id="snippet-lwc-html"></code></pre>
-                            </div>
-
-                            <div class="sf-snippet">
-                                <div class="sf-snippet-head">
-                                    <span class="sf-snippet-label">LWC — JS import</span>
-                                    <button class="btn btn-ghost" data-copy-target="snippet-lwc-js">Copy</button>
-                                </div>
-                                <pre><code id="snippet-lwc-js"></code></pre>
-                            </div>
-
-                            <div class="sf-snippet">
-                                <div class="sf-snippet-head">
-                                    <span class="sf-snippet-label">Visualforce</span>
-                                    <button class="btn btn-ghost" data-copy-target="snippet-vf">Copy</button>
-                                </div>
-                                <pre><code id="snippet-vf"></code></pre>
-                            </div>
-
-                            <div class="sf-snippet">
-                                <div class="sf-snippet-head">
-                                    <span class="sf-snippet-label">CSS background-image</span>
-                                    <button class="btn btn-ghost" data-copy-target="snippet-css">Copy</button>
-                                </div>
-                                <pre><code id="snippet-css"></code></pre>
-                            </div>
-
-                            <div class="sf-snippet">
-                                <div class="sf-snippet-head">
-                                    <span class="sf-snippet-label">SLDS-style icon container</span>
-                                    <button class="btn btn-ghost" data-copy-target="snippet-slds">Copy</button>
-                                </div>
-                                <pre><code id="snippet-slds"></code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-             <!-- Specific Tool View: JSON Editor -->
-             <div id="json-editor-view" class="tool-view view-hidden">
-                <div class="view-header">
-                    <button class="back-btn" id="back-to-menu-btn-json">
-                        <i data-lucide="arrow-left"></i>
-                        Back
-                    </button>
-                    <h2>JSON Editor</h2>
-                </div>
-
-                <div class="tool-body">
-                    <div class="json-input-section">
-                        <div class="textarea-container">
-                            <label for="json-input">Paste JSON here</label>
-                            <textarea id="json-input" placeholder='{ "example": "data" }' style="height: 150px; flex: none;"></textarea>
-                        </div>
-                        <div class="btn-row" style="margin-top: 12px;">
-                            <button class="btn btn-primary" id="btn-visualize-json">Visualize & Edit</button>
-                            <button class="btn btn-secondary" id="btn-format-json">Prettify</button>
-                        </div>
-                    </div>
-                    
-                    <div id="json-visualizer-container" class="panel visualizer-container view-hidden">
-                        <div class="visualizer-header">
-                            <h3>Data Visualization</h3>
-                            <div class="visualizer-actions">
-                                <button class="btn btn-secondary" id="btn-add-row">Add Item</button>
-                            </div>
-                        </div>
-                        <div class="table-wrapper panel">
-                            <table id="json-table">
-                                <!-- Generated dynamically -->
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="json-output-section">
-                        <div class="output-header">
-                            <label for="json-output">Resulting JSON</label>
-                            <button class="btn btn-ghost" id="btn-copy-json">Copy JSON</button>
-                        </div>
-                        <div class="textarea-container">
-                            <textarea id="json-output" readonly placeholder="Output will appear here..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="brand-mark">
+        <i data-lucide="leaf"></i>
+        <div>
+          <div class="brand-title">DevTools</div>
+          <div class="brand-sub">sheen.dev</div>
+        </div>
+      </div>
+      <div class="theme-switch" role="group" aria-label="Theme toggle">
+        <button id="theme-dark" class="active" type="button">
+          <i data-lucide="moon"></i> Dark
+        </button>
+        <button id="theme-light" type="button">
+          <i data-lucide="sun"></i> Light
+        </button>
+      </div>
     </div>
-    <script src="script.js?v=6"></script>
+  </header>
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav">
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" data-category="text">Aa&nbsp; TEXT</button>
+      <button class="tab-btn" data-category="number">#&nbsp; NUMBER</button>
+      <button class="tab-btn" data-category="salesforce">SF&nbsp; SALESFORCE</button>
+      <button class="tab-btn" data-category="json">{ }&nbsp; JSON</button>
+      <button class="tab-btn" data-category="nihon">日本</button>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- Text Tools Menu -->
+    <div id="text-tools-menu" class="tools-menu view-active">
+      <h2>Text Tools</h2>
+      <div class="tools-grid">
+        <div class="panel tool-card" data-tool="change-case">
+          <div class="tool-icon">Aa</div>
+          <div class="tool-details">
+            <h3>Change Case</h3>
+            <p>Convert text between different letter cases.</p>
+          </div>
+        </div>
+        <div class="panel tool-card" data-tool="kana-width-converter">
+          <div class="tool-icon">あ</div>
+          <div class="tool-details">
+            <h3>Kana Width</h3>
+            <p>Convert English letters and numbers to full-width or half-width.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Number Tools Menu -->
+    <div id="number-tools-menu" class="tools-menu view-hidden">
+      <h2>Number Tools</h2>
+      <div class="tools-grid">
+        <div class="panel tool-card" data-tool="phone-formatter">
+          <div class="tool-icon">☎</div>
+          <div class="tool-details">
+            <h3>Phone</h3>
+            <p>Format phone numbers with country codes and hyphens.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Salesforce Tools Menu -->
+    <div id="salesforce-tools-menu" class="tools-menu view-hidden">
+      <h2>Salesforce Tools</h2>
+      <div class="tools-grid">
+        <div class="panel tool-card" data-tool="create-icons">
+          <div class="tool-icon">★</div>
+          <div class="tool-details">
+            <h3>Create Icons</h3>
+            <p>Generate icons for Salesforce components.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON Tools Menu -->
+    <div id="json-tools-menu" class="tools-menu view-hidden">
+      <h2>JSON Tools</h2>
+      <div class="tools-grid">
+        <div class="panel tool-card" data-tool="json-editor">
+          <div class="tool-icon">{ }</div>
+          <div class="tool-details">
+            <h3>JSON Editor</h3>
+            <p>Parse, visualize as a table, and edit your JSON data.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 日本 Tools Menu -->
+    <div id="nihon-tools-menu" class="tools-menu view-hidden">
+      <h2>日本のツール</h2>
+      <div class="tools-grid">
+        <div class="panel tool-card" data-tool="social-insurance">
+          <div class="tool-icon">社</div>
+          <div class="tool-details">
+            <h3>社会保険料計算</h3>
+            <p>Japanese Social Insurance bracket calculator — 健康保険・厚生年金・介護保険.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool View: Change Case -->
+    <div id="change-case-view" class="tool-view view-hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-to-menu-btn"><i data-lucide="arrow-left"></i> Back</button>
+        <h2>Change Case</h2>
+      </div>
+      <div class="tool-body">
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btn-uppercase">UPPERCASE</button>
+          <button class="btn btn-secondary" id="btn-lowercase">lowercase</button>
+          <button class="btn btn-secondary" id="btn-sentencecase">Sentence case</button>
+        </div>
+        <div class="textarea-container">
+          <textarea id="case-input" placeholder="Type or paste your text here..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool View: Kana Width -->
+    <div id="kana-width-view" class="tool-view view-hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-to-menu-btn-kana"><i data-lucide="arrow-left"></i> Back</button>
+        <h2>Kana Width Converter</h2>
+      </div>
+      <div class="tool-body">
+        <div class="btn-row">
+          <button class="btn btn-secondary" id="btn-to-full-width">To Full-width</button>
+          <button class="btn btn-secondary" id="btn-to-half-width">To Half-width</button>
+        </div>
+        <div class="textarea-container">
+          <textarea id="kana-input" placeholder="Type or paste your text here (letters, numbers, symbols, kana)..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool View: Phone Formatter -->
+    <div id="phone-formatter-view" class="tool-view view-hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-to-menu-btn-phone"><i data-lucide="arrow-left"></i> Back</button>
+        <h2>Phone Formatter</h2>
+      </div>
+      <div class="tool-body">
+        <div class="panel controls-container">
+          <div class="field">
+            <label for="country-select">Country Selector</label>
+            <select id="country-select">
+              <option value="JP">Japan (JP) +81</option>
+              <option value="PH">Philippines (PH) +63</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Format Options</label>
+            <div class="btn-row">
+              <button class="badge-toggle" id="toggle-country-code">Include Country Code</button>
+              <button class="badge-toggle" id="toggle-hyphens">Use Hyphens</button>
+              <button class="badge-toggle" id="toggle-spaces">Use Space</button>
+            </div>
+          </div>
+        </div>
+        <div class="side-by-side-container">
+          <div class="textarea-container input-container">
+            <label for="phone-input">Raw Number(s)</label>
+            <textarea id="phone-input" placeholder="e.g. 08080069955&#10;09012345678" rows="8"></textarea>
+          </div>
+          <div class="textarea-container output-container">
+            <div class="output-header">
+              <label for="phone-output">Formatted Result</label>
+              <button class="btn btn-ghost" id="btn-copy-phone">Copy All</button>
+            </div>
+            <textarea id="phone-output" readonly placeholder="Results will appear here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool View: Create Icons -->
+    <div id="create-icons-view" class="tool-view view-hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-to-menu-btn-icons"><i data-lucide="arrow-left"></i> Back</button>
+        <h2>Create Salesforce Icons</h2>
+      </div>
+      <div class="tool-body">
+        <div class="sf-icon-grid">
+          <div class="sf-panel">
+            <h3 class="sf-panel-title">Input</h3>
+            <label for="iconName" class="sf-label">Icon name (used for filenames &amp; static resource)</label>
+            <input type="text" id="iconName" class="sf-input" value="my_icon" autocomplete="off" placeholder="lowercase_with_underscores">
+            <div class="sf-hint">Conventions: lowercase with underscores, no spaces, no leading digit, e.g. <code>account_brief_icon</code>.</div>
+            <label for="iconSize" class="sf-label">Display / PNG size (px)</label>
+            <input type="number" id="iconSize" class="sf-input sf-size-input" value="60" min="16" max="480" step="1" autocomplete="off">
+            <div class="sf-hint">Drives the transparent PNG dimensions and the <code>width</code>/<code>height</code> in the snippets below. 60 fits the Lightning Custom Image upload; 120+ is safer for high-DPI.</div>
+            <label for="svgInput" class="sf-label">SVG code</label>
+            <textarea id="svgInput" class="sf-textarea" spellcheck="false"></textarea>
+            <div id="svgError" class="sf-error"></div>
+            <label for="hexInput" class="sf-label">SLDS background color (hex)</label>
+            <div class="sf-hex-row">
+              <input type="text" id="hexInput" class="sf-input sf-hex-input" maxlength="7" placeholder="#0070D2" autocomplete="off">
+              <div class="sf-swatch-preview" id="hexPreview"></div>
+            </div>
+            <div class="btn-row" style="margin-top:20px;">
+              <button class="btn btn-primary" id="btn-render-icons">Re-render preview</button>
+              <button class="btn btn-secondary" id="btn-download-all-icons">Download all PNGs</button>
+            </div>
+          </div>
+          <div class="sf-panel">
+            <h3 class="sf-panel-title">Output</h3>
+            <div class="sf-previews">
+              <div class="sf-preview-card">
+                <div class="sf-canvas-wrap">
+                  <canvas id="canvasFlat" width="60" height="60" style="width:96px;height:96px;"></canvas>
+                </div>
+                <div class="sf-preview-meta">
+                  <div class="sf-preview-title">Flat <span class="sf-size-echo">60</span>×<span class="sf-size-echo">60</span> PNG</div>
+                  <div class="sf-preview-desc">Transparent background. For <strong>Custom Image</strong> tab icons.</div>
+                </div>
+                <button class="btn btn-ghost" data-download="canvasFlat" data-suffix="flat">Download</button>
+              </div>
+              <div class="sf-preview-card">
+                <div class="sf-canvas-wrap">
+                  <canvas id="canvasSlds" width="480" height="480" style="width:120px;height:120px;image-rendering:auto;"></canvas>
+                </div>
+                <div class="sf-preview-meta">
+                  <div class="sf-preview-title">SLDS 480×480 PNG</div>
+                  <div class="sf-preview-desc">For LWC. Upload as a <strong>Static Resource</strong> named <code class="sf-name-echo">my_icon</code>.</div>
+                </div>
+                <button class="btn btn-ghost" data-download="canvasSlds" data-suffix="slds">Download</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sf-panel sf-usage-section">
+          <h3 class="sf-panel-title">How to reference the icon</h3>
+          <p class="sf-usage-intro">
+            Upload <code class="sf-name-echo">my_icon</code>_slds.png as a Static Resource named
+            <code class="sf-name-echo">my_icon</code> (Cache Control: Public), then paste one of the snippets below.
+          </p>
+          <div class="sf-snippet-grid">
+            <div class="sf-snippet">
+              <div class="sf-snippet-head"><span class="sf-snippet-label">LWC — template</span><button class="btn btn-ghost" data-copy-target="snippet-lwc-html">Copy</button></div>
+              <pre><code id="snippet-lwc-html"></code></pre>
+            </div>
+            <div class="sf-snippet">
+              <div class="sf-snippet-head"><span class="sf-snippet-label">LWC — JS import</span><button class="btn btn-ghost" data-copy-target="snippet-lwc-js">Copy</button></div>
+              <pre><code id="snippet-lwc-js"></code></pre>
+            </div>
+            <div class="sf-snippet">
+              <div class="sf-snippet-head"><span class="sf-snippet-label">Visualforce</span><button class="btn btn-ghost" data-copy-target="snippet-vf">Copy</button></div>
+              <pre><code id="snippet-vf"></code></pre>
+            </div>
+            <div class="sf-snippet">
+              <div class="sf-snippet-head"><span class="sf-snippet-label">CSS background-image</span><button class="btn btn-ghost" data-copy-target="snippet-css">Copy</button></div>
+              <pre><code id="snippet-css"></code></pre>
+            </div>
+            <div class="sf-snippet">
+              <div class="sf-snippet-head"><span class="sf-snippet-label">SLDS-style icon container</span><button class="btn btn-ghost" data-copy-target="snippet-slds">Copy</button></div>
+              <pre><code id="snippet-slds"></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool View: JSON Editor -->
+    <div id="json-editor-view" class="tool-view view-hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-to-menu-btn-json"><i data-lucide="arrow-left"></i> Back</button>
+        <h2>JSON Editor</h2>
+      </div>
+      <div class="tool-body">
+        <div class="json-input-section">
+          <div class="textarea-container">
+            <label for="json-input">Paste JSON here</label>
+            <textarea id="json-input" placeholder='{ "example": "data" }' style="height:150px;flex:none;"></textarea>
+          </div>
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn btn-primary" id="btn-visualize-json">Visualize &amp; Edit</button>
+            <button class="btn btn-secondary" id="btn-format-json">Prettify</button>
+          </div>
+        </div>
+        <div id="json-visualizer-container" class="panel visualizer-container view-hidden">
+          <div class="visualizer-header">
+            <h3>Data Visualization</h3>
+            <div class="visualizer-actions">
+              <button class="btn btn-secondary" id="btn-add-row">Add Item</button>
+            </div>
+          </div>
+          <div class="table-wrapper panel">
+            <table id="json-table"></table>
+          </div>
+        </div>
+        <div class="json-output-section">
+          <div class="output-header">
+            <label for="json-output">Resulting JSON</label>
+            <button class="btn btn-ghost" id="btn-copy-json">Copy JSON</button>
+          </div>
+          <div class="textarea-container">
+            <textarea id="json-output" readonly placeholder="Output will appear here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tool View: Social Insurance -->
+    <div id="social-insurance-view" class="tool-view view-hidden">
+      <div class="view-header">
+        <button class="back-btn" id="back-to-menu-btn-si"><i data-lucide="arrow-left"></i> Back</button>
+        <h2>社会保険料 — Social Insurance Bracket</h2>
+      </div>
+      <div class="tool-body">
+        <div class="panel">
+          <div class="panel-title"><i data-lucide="calculator"></i> 入力 Input</div>
+          <div class="si-input-grid">
+            <div class="field">
+              <label for="si-salary">月給 Monthly Salary (¥)</label>
+              <input type="number" id="si-salary" placeholder="e.g. 300000" min="0" step="1000" style="width:100%;">
+            </div>
+            <div class="field">
+              <label for="si-prefecture">都道府県 Prefecture (協会けんぽ 2024)</label>
+              <select id="si-prefecture">
+                <option value="北海道">北海道 Hokkaido</option>
+                <option value="青森">青森 Aomori</option>
+                <option value="岩手">岩手 Iwate</option>
+                <option value="宮城">宮城 Miyagi</option>
+                <option value="秋田">秋田 Akita</option>
+                <option value="山形">山形 Yamagata</option>
+                <option value="福島">福島 Fukushima</option>
+                <option value="茨城">茨城 Ibaraki</option>
+                <option value="栃木">栃木 Tochigi</option>
+                <option value="群馬">群馬 Gunma</option>
+                <option value="埼玉">埼玉 Saitama</option>
+                <option value="千葉">千葉 Chiba</option>
+                <option value="東京" selected>東京 Tokyo</option>
+                <option value="神奈川">神奈川 Kanagawa</option>
+                <option value="新潟">新潟 Niigata</option>
+                <option value="富山">富山 Toyama</option>
+                <option value="石川">石川 Ishikawa</option>
+                <option value="福井">福井 Fukui</option>
+                <option value="山梨">山梨 Yamanashi</option>
+                <option value="長野">長野 Nagano</option>
+                <option value="岐阜">岐阜 Gifu</option>
+                <option value="静岡">静岡 Shizuoka</option>
+                <option value="愛知">愛知 Aichi</option>
+                <option value="三重">三重 Mie</option>
+                <option value="滋賀">滋賀 Shiga</option>
+                <option value="京都">京都 Kyoto</option>
+                <option value="大阪">大阪 Osaka</option>
+                <option value="兵庫">兵庫 Hyogo</option>
+                <option value="奈良">奈良 Nara</option>
+                <option value="和歌山">和歌山 Wakayama</option>
+                <option value="鳥取">鳥取 Tottori</option>
+                <option value="島根">島根 Shimane</option>
+                <option value="岡山">岡山 Okayama</option>
+                <option value="広島">広島 Hiroshima</option>
+                <option value="山口">山口 Yamaguchi</option>
+                <option value="徳島">徳島 Tokushima</option>
+                <option value="香川">香川 Kagawa</option>
+                <option value="愛媛">愛媛 Ehime</option>
+                <option value="高知">高知 Kochi</option>
+                <option value="福岡">福岡 Fukuoka</option>
+                <option value="佐賀">佐賀 Saga</option>
+                <option value="長崎">長崎 Nagasaki</option>
+                <option value="熊本">熊本 Kumamoto</option>
+                <option value="大分">大分 Oita</option>
+                <option value="宮崎">宮崎 Miyazaki</option>
+                <option value="鹿児島">鹿児島 Kagoshima</option>
+                <option value="沖縄">沖縄 Okinawa</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-top:0.75rem;">
+            <label>年齢区分 Age bracket</label>
+            <div class="btn-row">
+              <button class="badge-toggle active" id="si-age-under40">Under 40</button>
+              <button class="badge-toggle" id="si-age-40to64">40–64 (介護保険あり)</button>
+              <button class="badge-toggle" id="si-age-65plus">65+ (介護保険なし)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="si-result-panel">
+          <div class="panel-title"><i data-lucide="table-2"></i> 計算結果 Result</div>
+          <div id="si-result" class="si-placeholder">
+            <span class="text-muted">Enter a monthly salary above to see the breakdown.</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title"><i data-lucide="info"></i> Notes</div>
+          <p class="text-secondary" style="font-size:12px;line-height:1.7;">
+            Rates are from 協会けんぽ (Japan Health Insurance Association) fiscal year 2024 (April).
+            The 標準報酬月額 (standard monthly remuneration) is looked up from the official 50-grade table.
+            厚生年金 (Kosei Nenkin) is capped at ¥650,000.
+            介護保険 (care insurance, 1.60% total) applies to employees aged 40–64.
+            Employee and employer each bear half the total premium.
+            This calculator assumes 協会けんぽ membership — company-specific health insurance societies (健保組合) may differ.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="script.js?v=7"></script>
 </body>
 </html>

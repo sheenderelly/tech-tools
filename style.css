@@ -83,8 +83,8 @@ body {
     background-color: var(--bg-main);
     color: var(--text-primary);
     line-height: 1.6;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-y: auto;
     transition: var(--transition);
 }
 
@@ -199,26 +199,20 @@ blockquote {
 .notif-info    { background: rgba(212,225,87,0.10);  color: var(--accent);  border-color: var(--accent); }
 
 /* ===== Layout ===== */
-.app-container {
-    display: flex;
-    height: 100vh;
-}
 
-/* ===== Sidebar ===== */
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--bg-card);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-header {
-    padding: 1.25rem;
+/* ===== App Header ===== */
+.app-header {
+    background: var(--bg-card);
     border-bottom: 1px dashed var(--border);
+}
+
+.app-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .brand-mark {
@@ -232,76 +226,77 @@ blockquote {
     height: 28px;
     color: var(--accent);
 }
-.brand-mark h1 {
-    font-size: 1.25rem;
+.brand-title {
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--accent);
     letter-spacing: 0.02em;
 }
-
-.sidebar-nav {
-    padding: 20px;
-    flex: 1;
-    overflow-y: auto;
-}
-
-.category-header {
-    font-size: 0.75rem;
+.brand-sub {
+    color: var(--text-muted);
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-    font-weight: 600;
+    margin-top: 1px;
 }
 
-.nav-list {
-    list-style: none;
+/* ===== Tab Nav ===== */
+.tab-nav {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.nav-item {
+.tab-nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
     display: flex;
-    align-items: center;
-    padding: 10px;
-    border-radius: var(--radius-md);
+    gap: 0;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1.25rem;
     cursor: pointer;
     transition: var(--transition);
-    color: var(--text-secondary);
-    margin-bottom: 4px;
+    white-space: nowrap;
 }
 
-.nav-item:hover {
-    background-color: var(--bg-elevated);
+.tab-btn:hover {
     color: var(--text-primary);
 }
 
-.nav-item.active {
-    background-color: var(--color-olive-dark);
-    color: #fff;
-}
-:root[data-theme="light"] .nav-item.active {
-    background: var(--color-olive-base);
-    color: #fff;
-}
-
-.nav-item .icon {
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-right: 16px;
-    width: 24px;
-    text-align: center;
-}
-
-.nav-item .label {
-    font-size: 0.9rem;
-    font-weight: 500;
+.tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
 }
 
 /* ===== Main Content Area ===== */
 .main-content {
-    flex: 1;
-    position: relative;
-    overflow-y: auto;
     background-color: var(--bg-main);
+    min-height: calc(100vh - 120px);
+}
+
+/* ===== Grid utility ===== */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+@media (max-width: 700px) {
+    .grid-2 { grid-template-columns: 1fr; }
 }
 
 /* ===== Views Management ===== */
@@ -327,7 +322,7 @@ blockquote {
 
 /* ===== Tools Menu ===== */
 .tools-menu {
-    padding: 40px;
+    padding: 2.5rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -385,8 +380,8 @@ blockquote {
 
 /* ===== Tool Views ===== */
 .tool-view {
-    padding: 40px;
-    max-width: 1000px;
+    padding: 2.5rem 2rem;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -412,8 +407,7 @@ blockquote {
 .theme-switch {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: var(--bg-elevated);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 999px;
     padding: 0.25rem;
@@ -424,15 +418,13 @@ blockquote {
     color: var(--text-secondary);
     font-family: inherit;
     font-size: 12px;
-    padding: 0.4rem;
+    padding: 0.4rem 0.8rem;
     border-radius: 999px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.4rem;
     transition: var(--transition);
-    width: 28px;
-    height: 28px;
 }
 .theme-switch button svg,
 .theme-switch button i { width: 14px; height: 14px; }
@@ -556,7 +548,7 @@ input::placeholder { color: var(--text-muted); }
 
 textarea {
     width: 100%;
-    height: 100%;
+    min-height: 220px;
     background-color: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
@@ -564,7 +556,7 @@ textarea {
     color: var(--text-primary);
     font-family: var(--font-family);
     font-size: 1rem;
-    resize: none;
+    resize: vertical;
     outline: none;
     transition: var(--transition);
 }
@@ -600,8 +592,6 @@ label {
 .field { margin-bottom: 0.75rem; }
 
 .textarea-container {
-    flex: 1;
-    min-height: 250px;
     display: flex;
     flex-direction: column;
 }
@@ -975,3 +965,96 @@ td {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-moss-dark); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-moss-base); }
+
+/* ===== Social Insurance Tool ===== */
+.si-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+@media (max-width: 700px) {
+    .si-input-grid { grid-template-columns: 1fr; }
+}
+
+.si-placeholder {
+    padding: 1rem 0;
+}
+
+.si-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.si-table th {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.si-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.si-table tr:last-child td {
+    border-bottom: none;
+}
+
+.si-table .row-total td {
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--bg-elevated);
+    border-top: 2px solid var(--border);
+}
+
+.si-table .row-label {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.si-table .row-rate {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.si-summary {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.si-summary-card {
+    flex: 1;
+    min-width: 160px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+}
+
+.si-summary-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.si-summary-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.si-summary-value.accent { color: var(--accent); }
+.si-summary-value.success { color: var(--success); }
+.si-summary-value.warn { color: var(--warn); }

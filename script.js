@@ -35,11 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const numberToolsMenu = document.getElementById('number-tools-menu');
     const jsonToolsMenu = document.getElementById('json-tools-menu');
     const salesforceToolsMenu = document.getElementById('salesforce-tools-menu');
+    const nihonToolsMenu = document.getElementById('nihon-tools-menu');
     // Default starting menu
     let currentMenu = textToolsMenu;
 
-    // Sidebar
-    const navItems = document.querySelectorAll('.nav-item');
+    // Tab nav
+    const navItems = document.querySelectorAll('.tab-btn');
 
     // Text Tool Views & Elements
     const changeCaseView = document.getElementById('change-case-view');
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         viewElement.classList.add('view-active');
     }
 
-    // Sidebar Category Switcher
+    // Tab Category Switcher
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             navItems.forEach(nav => nav.classList.remove('active'));
@@ -122,6 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentMenu = salesforceToolsMenu;
             } else if (category === 'json') {
                 currentMenu = jsonToolsMenu;
+            } else if (category === 'nihon') {
+                currentMenu = nihonToolsMenu;
             }
 
             showView(currentMenu);
@@ -154,6 +157,16 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonEditorCard.addEventListener('click', () => {
             showView(jsonEditorView);
             if (jsonInput) jsonInput.focus();
+        });
+    }
+
+    // Japan: Social Insurance
+    const socialInsuranceCard = document.querySelector('[data-tool="social-insurance"]');
+    const socialInsuranceView = document.getElementById('social-insurance-view');
+    if (socialInsuranceCard) {
+        socialInsuranceCard.addEventListener('click', () => {
+            showView(socialInsuranceView);
+            initSocialInsurance();
         });
     }
 
@@ -375,6 +388,206 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateJsonOutput();
             }
         });
+    }
+
+    // 5. Social Insurance Tool
+    const SI_BRACKETS = [
+        { amount: 58000, min: 0 },       { amount: 68000, min: 63000 },
+        { amount: 78000, min: 73000 },   { amount: 88000, min: 83000 },
+        { amount: 98000, min: 93000 },   { amount: 104000, min: 101000 },
+        { amount: 110000, min: 107000 }, { amount: 118000, min: 114000 },
+        { amount: 126000, min: 122000 }, { amount: 134000, min: 130000 },
+        { amount: 142000, min: 138000 }, { amount: 150000, min: 146000 },
+        { amount: 160000, min: 155000 }, { amount: 170000, min: 165000 },
+        { amount: 180000, min: 175000 }, { amount: 190000, min: 185000 },
+        { amount: 200000, min: 195000 }, { amount: 220000, min: 210000 },
+        { amount: 240000, min: 230000 }, { amount: 260000, min: 250000 },
+        { amount: 280000, min: 270000 }, { amount: 300000, min: 290000 },
+        { amount: 320000, min: 310000 }, { amount: 340000, min: 330000 },
+        { amount: 360000, min: 350000 }, { amount: 380000, min: 370000 },
+        { amount: 410000, min: 395000 }, { amount: 440000, min: 425000 },
+        { amount: 470000, min: 455000 }, { amount: 500000, min: 485000 },
+        { amount: 530000, min: 515000 }, { amount: 560000, min: 545000 },
+        { amount: 590000, min: 575000 }, { amount: 620000, min: 605000 },
+        { amount: 650000, min: 635000 }, { amount: 680000, min: 665000 },
+        { amount: 710000, min: 695000 }, { amount: 750000, min: 730000 },
+        { amount: 790000, min: 770000 }, { amount: 830000, min: 810000 },
+        { amount: 880000, min: 855000 }, { amount: 930000, min: 905000 },
+        { amount: 980000, min: 955000 }, { amount: 1030000, min: 1005000 },
+        { amount: 1090000, min: 1055000 }, { amount: 1150000, min: 1115000 },
+        { amount: 1210000, min: 1175000 }, { amount: 1270000, min: 1235000 },
+        { amount: 1330000, min: 1295000 }, { amount: 1390000, min: 1355000 },
+    ];
+
+    const SI_KENPO_RATES = {
+        '北海道': 10.21, '青森': 9.67,  '岩手': 9.75,  '宮城': 10.31, '秋田': 10.02,
+        '山形': 9.84,  '福島': 9.53,  '茨城': 9.87,  '栃木': 9.91,  '群馬': 9.76,
+        '埼玉': 9.81,  '千葉': 9.87,  '東京': 9.98,  '神奈川': 10.02,'新潟': 9.35,
+        '富山': 9.57,  '石川': 9.94,  '福井': 9.73,  '山梨': 9.98,  '長野': 9.49,
+        '岐阜': 9.80,  '静岡': 9.78,  '愛知': 9.89,  '三重': 9.81,  '滋賀': 9.81,
+        '京都': 10.32, '大阪': 10.29, '兵庫': 10.20, '奈良': 10.22, '和歌山': 10.05,
+        '鳥取': 9.97,  '島根': 10.11, '岡山': 10.23, '広島': 9.95,  '山口': 10.21,
+        '徳島': 10.10, '香川': 10.28, '愛媛': 10.01, '高知': 10.10, '福岡': 10.36,
+        '佐賀': 10.50, '長崎': 10.21, '熊本': 10.32, '大分': 10.21, '宮崎': 9.87,
+        '鹿児島': 10.06,'沖縄': 9.27,
+    };
+    const SI_KAIGO_RATE = 1.60;
+    const SI_NENKIN_RATE = 18.3;
+    const SI_NENKIN_MAX = 650000;
+
+    function siBracket(salary) {
+        let bracket = SI_BRACKETS[0];
+        for (const b of SI_BRACKETS) {
+            if (salary >= b.min) bracket = b;
+            else break;
+        }
+        return bracket.amount;
+    }
+
+    function siFormat(n) {
+        return '¥' + Math.round(n).toLocaleString('en-US');
+    }
+
+    let siAgeMode = 'under40'; // 'under40' | '40to64' | '65plus'
+    let siReady = false;
+
+    function initSocialInsurance() {
+        if (siReady) return;
+        siReady = true;
+
+        const salary = document.getElementById('si-salary');
+        const prefecture = document.getElementById('si-prefecture');
+        const btnUnder40 = document.getElementById('si-age-under40');
+        const btn40to64 = document.getElementById('si-age-40to64');
+        const btn65plus = document.getElementById('si-age-65plus');
+
+        function setAge(mode) {
+            siAgeMode = mode;
+            btnUnder40.classList.toggle('active', mode === 'under40');
+            btn40to64.classList.toggle('active', mode === '40to64');
+            btn65plus.classList.toggle('active', mode === '65plus');
+            siCalc();
+        }
+
+        btnUnder40.addEventListener('click', () => setAge('under40'));
+        btn40to64.addEventListener('click', () => setAge('40to64'));
+        btn65plus.addEventListener('click', () => setAge('65plus'));
+        salary.addEventListener('input', siCalc);
+        prefecture.addEventListener('change', siCalc);
+
+        const backBtn = document.getElementById('back-to-menu-btn-si');
+        if (backBtn) backBtn.addEventListener('click', () => showView(currentMenu));
+    }
+
+    function siCalc() {
+        const salaryVal = parseFloat(document.getElementById('si-salary').value);
+        const pref = document.getElementById('si-prefecture').value;
+        const resultEl = document.getElementById('si-result');
+
+        if (!salaryVal || salaryVal <= 0) {
+            resultEl.innerHTML = '<span class="text-muted">Enter a monthly salary above to see the breakdown.</span>';
+            return;
+        }
+
+        const stdAmount = siBracket(salaryVal);
+        const nenkinBase = Math.min(stdAmount, SI_NENKIN_MAX);
+        const kenpoRate = SI_KENPO_RATES[pref] || 9.98;
+        const includeKaigo = siAgeMode === '40to64';
+        const kaigoRate = includeKaigo ? SI_KAIGO_RATE : 0;
+        const totalKenpoRate = kenpoRate + kaigoRate;
+
+        const kenpoTotal = stdAmount * (totalKenpoRate / 100);
+        const kenpoEmp = kenpoTotal / 2;
+        const nenkinTotal = nenkinBase * (SI_NENKIN_RATE / 100);
+        const nenkinEmp = nenkinTotal / 2;
+        const kaigoTotal = includeKaigo ? (stdAmount * (SI_KAIGO_RATE / 100)) : 0;
+        const kaigoEmp = kaigoTotal / 2;
+
+        const totalEmp = kenpoEmp + nenkinEmp;
+        const takehome = salaryVal - totalEmp;
+
+        const rows = [
+            {
+                label: '健康保険 Health Insurance',
+                base: stdAmount,
+                rate: `${kenpoRate.toFixed(2)}%`,
+                emp: kenpoEmp - kaigoEmp,
+                employer: kenpoTotal / 2 - kaigoEmp,
+            },
+        ];
+
+        if (includeKaigo) {
+            rows.push({
+                label: '介護保険 Care Insurance (40–64)',
+                base: stdAmount,
+                rate: `${SI_KAIGO_RATE.toFixed(2)}%`,
+                emp: kaigoEmp,
+                employer: kaigoEmp,
+            });
+        }
+
+        rows.push({
+            label: '厚生年金 Kosei Nenkin',
+            base: nenkinBase,
+            rate: `${SI_NENKIN_RATE}%`,
+            emp: nenkinEmp,
+            employer: nenkinEmp,
+        });
+
+        const tableRows = rows.map(r => `
+            <tr>
+                <td class="row-label">${r.label}</td>
+                <td>${siFormat(r.base)}</td>
+                <td class="row-rate">${r.rate}</td>
+                <td>${siFormat(r.emp)}</td>
+                <td>${siFormat(r.employer)}</td>
+                <td>${siFormat(r.emp + r.employer)}</td>
+            </tr>
+        `).join('');
+
+        resultEl.innerHTML = `
+            <div style="overflow-x:auto;">
+                <table class="si-table">
+                    <thead>
+                        <tr>
+                            <th>項目 Item</th>
+                            <th>標準報酬月額</th>
+                            <th>保険料率</th>
+                            <th>従業員負担</th>
+                            <th>事業主負担</th>
+                            <th>合計 Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                        <tr class="row-total">
+                            <td colspan="3">合計 Total</td>
+                            <td>${siFormat(totalEmp)}</td>
+                            <td>${siFormat(totalEmp)}</td>
+                            <td>${siFormat(totalEmp * 2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="si-summary">
+                <div class="si-summary-card">
+                    <div class="si-summary-label">標準報酬月額</div>
+                    <div class="si-summary-value accent">${siFormat(stdAmount)}</div>
+                </div>
+                <div class="si-summary-card">
+                    <div class="si-summary-label">月給 Salary</div>
+                    <div class="si-summary-value">${siFormat(salaryVal)}</div>
+                </div>
+                <div class="si-summary-card">
+                    <div class="si-summary-label">従業員控除合計 Deduction</div>
+                    <div class="si-summary-value warn">− ${siFormat(totalEmp)}</div>
+                </div>
+                <div class="si-summary-card">
+                    <div class="si-summary-label">手取り推定 Est. Take-home</div>
+                    <div class="si-summary-value success">${siFormat(takehome)}</div>
+                </div>
+            </div>
+        `;
     }
 
     // 4. Salesforce Icon Converter
