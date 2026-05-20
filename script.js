@@ -390,11 +390,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. Social Insurance Tool
-    const SI_BRACKETS = [
-        { amount: 58000, min: 0 },       { amount: 68000, min: 63000 },
-        { amount: 78000, min: 73000 },   { amount: 88000, min: 83000 },
-        { amount: 98000, min: 93000 },   { amount: 104000, min: 101000 },
+    // 5. Social Insurance — Santei Kiso Todoke Bracket Tracker
+    const SIT_BRACKETS = [
+        { amount: 58000,  min: 0 },      { amount: 68000,  min: 63000 },
+        { amount: 78000,  min: 73000 },  { amount: 88000,  min: 83000 },
+        { amount: 98000,  min: 93000 },  { amount: 104000, min: 101000 },
         { amount: 110000, min: 107000 }, { amount: 118000, min: 114000 },
         { amount: 126000, min: 122000 }, { amount: 134000, min: 130000 },
         { amount: 142000, min: 138000 }, { amount: 150000, min: 146000 },
@@ -409,185 +409,251 @@ document.addEventListener('DOMContentLoaded', () => {
         { amount: 470000, min: 455000 }, { amount: 500000, min: 485000 },
         { amount: 530000, min: 515000 }, { amount: 560000, min: 545000 },
         { amount: 590000, min: 575000 }, { amount: 620000, min: 605000 },
-        { amount: 650000, min: 635000 }, { amount: 680000, min: 665000 },
-        { amount: 710000, min: 695000 }, { amount: 750000, min: 730000 },
-        { amount: 790000, min: 770000 }, { amount: 830000, min: 810000 },
-        { amount: 880000, min: 855000 }, { amount: 930000, min: 905000 },
-        { amount: 980000, min: 955000 }, { amount: 1030000, min: 1005000 },
-        { amount: 1090000, min: 1055000 }, { amount: 1150000, min: 1115000 },
-        { amount: 1210000, min: 1175000 }, { amount: 1270000, min: 1235000 },
-        { amount: 1330000, min: 1295000 }, { amount: 1390000, min: 1355000 },
+        { amount: 650000, min: 635000 },
     ];
+    const SIT_HEALTH_RATE = 0.0499;  // Tokyo 2024 employee share (9.98% / 2)
+    const SIT_PENSION_RATE = 0.0915; // employee share (18.3% / 2)
+    const SIT_PENSION_CAP = 650000;
 
-    const SI_KENPO_RATES = {
-        '北海道': 10.21, '青森': 9.67,  '岩手': 9.75,  '宮城': 10.31, '秋田': 10.02,
-        '山形': 9.84,  '福島': 9.53,  '茨城': 9.87,  '栃木': 9.91,  '群馬': 9.76,
-        '埼玉': 9.81,  '千葉': 9.87,  '東京': 9.98,  '神奈川': 10.02,'新潟': 9.35,
-        '富山': 9.57,  '石川': 9.94,  '福井': 9.73,  '山梨': 9.98,  '長野': 9.49,
-        '岐阜': 9.80,  '静岡': 9.78,  '愛知': 9.89,  '三重': 9.81,  '滋賀': 9.81,
-        '京都': 10.32, '大阪': 10.29, '兵庫': 10.20, '奈良': 10.22, '和歌山': 10.05,
-        '鳥取': 9.97,  '島根': 10.11, '岡山': 10.23, '広島': 9.95,  '山口': 10.21,
-        '徳島': 10.10, '香川': 10.28, '愛媛': 10.01, '高知': 10.10, '福岡': 10.36,
-        '佐賀': 10.50, '長崎': 10.21, '熊本': 10.32, '大分': 10.21, '宮崎': 9.87,
-        '鹿児島': 10.06,'沖縄': 9.27,
-    };
-    const SI_KAIGO_RATE = 1.60;
-    const SI_NENKIN_RATE = 18.3;
-    const SI_NENKIN_MAX = 650000;
+    let sitReady = false;
+    let sitModes = ['total', 'total', 'total'];
 
-    function siBracket(salary) {
-        let bracket = SI_BRACKETS[0];
-        for (const b of SI_BRACKETS) {
-            if (salary >= b.min) bracket = b;
-            else break;
-        }
-        return bracket.amount;
+    function sitFindBracket(avg) {
+        let b = SIT_BRACKETS[0];
+        for (const br of SIT_BRACKETS) { if (avg >= br.min) b = br; else break; }
+        return b;
     }
-
-    function siFormat(n) {
-        return '¥' + Math.round(n).toLocaleString('en-US');
+    function sitDeduction(bracketAmount) {
+        const h = bracketAmount * SIT_HEALTH_RATE;
+        const p = Math.min(bracketAmount, SIT_PENSION_CAP) * SIT_PENSION_RATE;
+        return h + p;
     }
-
-    let siAgeMode = 'under40'; // 'under40' | '40to64' | '65plus'
-    let siReady = false;
+    function sitFmt(n) { return '¥' + Math.round(n).toLocaleString('en-US'); }
+    function sitFmtH(n) { return (Math.round(n * 10) / 10).toFixed(1) + 'h'; }
 
     function initSocialInsurance() {
-        if (siReady) return;
-        siReady = true;
-
-        const salary = document.getElementById('si-salary');
-        const prefecture = document.getElementById('si-prefecture');
-        const btnUnder40 = document.getElementById('si-age-under40');
-        const btn40to64 = document.getElementById('si-age-40to64');
-        const btn65plus = document.getElementById('si-age-65plus');
-
-        function setAge(mode) {
-            siAgeMode = mode;
-            btnUnder40.classList.toggle('active', mode === 'under40');
-            btn40to64.classList.toggle('active', mode === '40to64');
-            btn65plus.classList.toggle('active', mode === '65plus');
-            siCalc();
-        }
-
-        btnUnder40.addEventListener('click', () => setAge('under40'));
-        btn40to64.addEventListener('click', () => setAge('40to64'));
-        btn65plus.addEventListener('click', () => setAge('65plus'));
-        salary.addEventListener('input', siCalc);
-        prefecture.addEventListener('change', siCalc);
+        if (sitReady) return;
+        sitReady = true;
 
         const backBtn = document.getElementById('back-to-menu-btn-si');
         if (backBtn) backBtn.addEventListener('click', () => showView(currentMenu));
+
+        document.querySelectorAll('.sit-mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => sitSetMode(parseInt(btn.dataset.month), btn.dataset.mode));
+        });
+        ['sit-base', 'sit-ot-rate', 'sit-current-bracket'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => { sitSyncBase(); sitUpdate(); });
+        });
+        for (let i = 0; i < 3; i++) {
+            document.getElementById(`sit-gross-${i}`)?.addEventListener('input', sitUpdate);
+            document.getElementById(`sit-ot-${i}`)?.addEventListener('input', sitUpdate);
+            document.getElementById(`sit-locked-${i}`)?.addEventListener('change', sitUpdate);
+        }
+        sitSyncBase();
+        sitUpdate();
     }
 
-    function siCalc() {
-        const salaryVal = parseFloat(document.getElementById('si-salary').value);
-        const pref = document.getElementById('si-prefecture').value;
-        const resultEl = document.getElementById('si-result');
+    function sitSetMode(month, mode) {
+        sitModes[month] = mode;
+        document.querySelectorAll(`.sit-mode-btn[data-month="${month}"]`).forEach(b =>
+            b.classList.toggle('active', b.dataset.mode === mode)
+        );
+        document.getElementById(`sit-total-entry-${month}`).classList.toggle('view-hidden', mode !== 'total');
+        document.getElementById(`sit-hours-entry-${month}`).classList.toggle('view-hidden', mode !== 'hours');
+        sitUpdate();
+    }
 
-        if (!salaryVal || salaryVal <= 0) {
-            resultEl.innerHTML = '<span class="text-muted">Enter a monthly salary above to see the breakdown.</span>';
-            return;
+    function sitSyncBase() {
+        const base = parseFloat(document.getElementById('sit-base')?.value) || 290000;
+        document.querySelectorAll('.sit-base-echo').forEach(el => { el.value = base; });
+    }
+
+    function sitGetGross(i) {
+        const base = parseFloat(document.getElementById('sit-base')?.value) || 290000;
+        const otRate = parseFloat(document.getElementById('sit-ot-rate')?.value) || 2500;
+        if (sitModes[i] === 'hours') {
+            const hours = parseFloat(document.getElementById(`sit-ot-${i}`)?.value) || 0;
+            return base + hours * otRate;
+        }
+        const v = parseFloat(document.getElementById(`sit-gross-${i}`)?.value);
+        return isNaN(v) ? base : v;
+    }
+
+    function sitIsAdjustable(i) {
+        const locked = document.getElementById(`sit-locked-${i}`)?.checked;
+        return sitModes[i] === 'hours' && !locked;
+    }
+
+    function sitUpdate() {
+        const base = parseFloat(document.getElementById('sit-base')?.value) || 290000;
+        const otRate = parseFloat(document.getElementById('sit-ot-rate')?.value) || 2500;
+        const currentBracketAmt = parseFloat(document.getElementById('sit-current-bracket')?.value) || 260000;
+
+        // Update month footer totals + locked styling
+        for (let i = 0; i < 3; i++) {
+            const gross = sitGetGross(i);
+            const el = document.getElementById(`sit-mg-${i}`);
+            if (el) {
+                const isManualEmpty = sitModes[i] === 'total' &&
+                    (document.getElementById(`sit-gross-${i}`)?.value === '');
+                el.textContent = sitFmt(gross) + (isManualEmpty ? ' (est.)' : '');
+            }
+            const locked = document.getElementById(`sit-locked-${i}`)?.checked;
+            const card = document.getElementById(`sit-month-${i}`);
+            if (card) {
+                card.classList.toggle('sit-locked', !!locked);
+                card.classList.toggle('sit-unlocked', !locked);
+            }
         }
 
-        const stdAmount = siBracket(salaryVal);
-        const nenkinBase = Math.min(stdAmount, SI_NENKIN_MAX);
-        const kenpoRate = SI_KENPO_RATES[pref] || 9.98;
-        const includeKaigo = siAgeMode === '40to64';
-        const kaigoRate = includeKaigo ? SI_KAIGO_RATE : 0;
-        const totalKenpoRate = kenpoRate + kaigoRate;
+        const grosses = [0, 1, 2].map(i => sitGetGross(i));
+        const avg = grosses.reduce((a, b) => a + b, 0) / 3;
+        const projBracket = sitFindBracket(avg);
+        const currBracket = sitFindBracket(currentBracketAmt);
+        const currDed = sitDeduction(currBracket.amount);
 
-        const kenpoTotal = stdAmount * (totalKenpoRate / 100);
-        const kenpoEmp = kenpoTotal / 2;
-        const nenkinTotal = nenkinBase * (SI_NENKIN_RATE / 100);
-        const nenkinEmp = nenkinTotal / 2;
-        const kaigoTotal = includeKaigo ? (stdAmount * (SI_KAIGO_RATE / 100)) : 0;
-        const kaigoEmp = kaigoTotal / 2;
+        // Status badge
+        const projIdx = SIT_BRACKETS.findIndex(b => b.amount === projBracket.amount);
+        const currIdx = SIT_BRACKETS.findIndex(b => b.amount === currBracket.amount);
+        const nextBracket = projIdx + 1 < SIT_BRACKETS.length ? SIT_BRACKETS[projIdx + 1] : null;
+        const distToNext = nextBracket ? nextBracket.min - avg : Infinity;
 
-        const totalEmp = kenpoEmp + nenkinEmp;
-        const takehome = salaryVal - totalEmp;
+        let statusLabel, statusClass;
+        if (projBracket.amount > currBracket.amount) {
+            statusLabel = distToNext < 15000 ? '⚠ Near next bracket too' : '↑ Higher bracket projected';
+            statusClass = 'sit-badge-red';
+        } else if (projBracket.amount < currBracket.amount) {
+            statusLabel = '↓ Lower bracket projected';
+            statusClass = 'sit-badge-green';
+        } else {
+            statusLabel = distToNext < 15000 ? '⚠ Near bracket limit' : '✓ Staying in current bracket';
+            statusClass = distToNext < 15000 ? 'sit-badge-warn' : 'sit-badge-green';
+        }
 
-        const rows = [
-            {
-                label: '健康保険 Health Insurance',
-                base: stdAmount,
-                rate: `${kenpoRate.toFixed(2)}%`,
-                emp: kenpoEmp - kaigoEmp,
-                employer: kenpoTotal / 2 - kaigoEmp,
-            },
+        // Budget for adjustable months
+        const adjIdx = [0, 1, 2].filter(i => sitIsAdjustable(i));
+        const fixedSum = [0, 1, 2].filter(i => !sitIsAdjustable(i)).reduce((s, i) => s + sitGetGross(i), 0);
+        const adjBaseSum = base * adjIdx.length;
+
+        const thresholds = [
+            { label: 'Stay in ¥260k bracket', maxAvg: 270000 },
+            { label: 'Stay in ¥280k bracket', maxAvg: 290000 },
+            { label: 'Stay in ¥300k bracket', maxAvg: 310000 },
+            { label: 'Stay in ¥320k bracket', maxAvg: 330000 },
         ];
-
-        if (includeKaigo) {
-            rows.push({
-                label: '介護保険 Care Insurance (40–64)',
-                base: stdAmount,
-                rate: `${SI_KAIGO_RATE.toFixed(2)}%`,
-                emp: kaigoEmp,
-                employer: kaigoEmp,
-            });
-        }
-
-        rows.push({
-            label: '厚生年金 Kosei Nenkin',
-            base: nenkinBase,
-            rate: `${SI_NENKIN_RATE}%`,
-            emp: nenkinEmp,
-            employer: nenkinEmp,
+        const budgets = thresholds.map(t => {
+            const otBudget = t.maxAvg * 3 - fixedSum - adjBaseSum;
+            const totalH = adjIdx.length > 0 ? otBudget / otRate : null;
+            const perMonthH = totalH !== null && adjIdx.length > 0 ? totalH / adjIdx.length : null;
+            return { ...t, totalH, perMonthH, possible: adjIdx.length > 0, exceeded: totalH !== null && totalH < 0 };
         });
 
-        const tableRows = rows.map(r => `
-            <tr>
-                <td class="row-label">${r.label}</td>
-                <td>${siFormat(r.base)}</td>
-                <td class="row-rate">${r.rate}</td>
-                <td>${siFormat(r.emp)}</td>
-                <td>${siFormat(r.employer)}</td>
-                <td>${siFormat(r.emp + r.employer)}</td>
-            </tr>
-        `).join('');
+        // Impact bracket range: show 2 below current and 4 above projected
+        const startIdx = Math.max(0, currIdx - 1);
+        const endIdx = Math.min(SIT_BRACKETS.length - 1, Math.max(projIdx + 3, currIdx + 4));
+        const impactBrackets = SIT_BRACKETS.slice(startIdx, endIdx + 1);
 
-        resultEl.innerHTML = `
-            <div style="overflow-x:auto;">
-                <table class="si-table">
-                    <thead>
-                        <tr>
-                            <th>項目 Item</th>
-                            <th>標準報酬月額</th>
-                            <th>保険料率</th>
-                            <th>従業員負担</th>
-                            <th>事業主負担</th>
-                            <th>合計 Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                        <tr class="row-total">
-                            <td colspan="3">合計 Total</td>
-                            <td>${siFormat(totalEmp)}</td>
-                            <td>${siFormat(totalEmp)}</td>
-                            <td>${siFormat(totalEmp * 2)}</td>
-                        </tr>
-                    </tbody>
-                </table>
+        // Bracket bar
+        const barMin = Math.max(0, (currBracket.min || 0) - 20000);
+        const barMax = Math.max(projBracket.amount + 80000, currBracket.amount + 100000);
+        const barRange = barMax - barMin;
+        const avgPct = Math.max(0, Math.min(98, ((avg - barMin) / barRange) * 100)).toFixed(1);
+        const safeEdgePct = Math.max(0, Math.min(100, ((currBracket.min + (nextBracket ? nextBracket.min - currBracket.min : 20000) - barMin) / barRange) * 100)).toFixed(1);
+
+        // Tick marks for bracket boundaries
+        const ticks = SIT_BRACKETS
+            .filter(b => b.min > barMin && b.min < barMax)
+            .map(b => {
+                const pct = ((b.min - barMin) / barRange * 100).toFixed(1);
+                const isTarget = b.amount === currBracket.amount || (nextBracket && b.min === nextBracket.min);
+                return `<div class="sit-tick${isTarget ? ' sit-tick-key' : ''}" style="left:${pct}%">
+                    <div class="sit-tick-line"></div>
+                    <div class="sit-tick-label">${(b.min/1000).toFixed(0)}k</div>
+                </div>`;
+            }).join('');
+
+        // Budget rows HTML
+        const budgetRows = budgets.map(bud => {
+            const alreadyMet = avg < bud.maxAvg;
+            return `<tr>
+                <td class="text-secondary">${bud.label}</td>
+                <td class="sit-td-num text-muted">avg &lt; ${sitFmt(bud.maxAvg)}</td>
+                <td class="sit-td-num">${!bud.possible
+                    ? '<span class="text-muted">Switch a month to "From Hours"</span>'
+                    : bud.exceeded
+                        ? '<span style="color:var(--error)">Already exceeded — 0 OT won\'t help</span>'
+                        : `<span style="color:var(--success)">${sitFmtH(bud.totalH)} total · ${sitFmtH(bud.perMonthH)}/mo</span>`
+                }</td>
+            </tr>`;
+        }).join('');
+
+        // Impact rows HTML
+        const impactRows = impactBrackets.map(b => {
+            const ded = sitDeduction(b.amount);
+            const delta = ded - currDed;
+            const isCurr = b.amount === currBracket.amount;
+            const isProj = b.amount === projBracket.amount;
+            const rowClass = isProj ? 'sit-impact-proj' : isCurr ? 'sit-impact-curr' : '';
+            const tag = isProj ? ' ← projected' : isCurr ? ' ← current' : '';
+            const nxt = SIT_BRACKETS[SIT_BRACKETS.findIndex(x => x.amount === b.amount) + 1];
+            return `<tr class="${rowClass}">
+                <td>${sitFmt(b.amount)}<span class="text-muted" style="font-size:10px;">${tag}</span></td>
+                <td class="sit-td-num text-muted">${sitFmt(b.min)}${nxt ? '–' + sitFmt(nxt.min) : '+'}</td>
+                <td class="sit-td-num">${sitFmt(ded)}</td>
+                <td class="sit-td-num ${delta > 0 ? 'sit-delta-up' : delta < 0 ? 'sit-delta-dn' : ''}">${delta === 0 ? '—' : (delta > 0 ? '+' : '') + sitFmt(delta)}</td>
+            </tr>`;
+        }).join('');
+
+        const dashboard = document.getElementById('sit-dashboard');
+        if (!dashboard) return;
+        dashboard.innerHTML = `
+            <div class="sit-avg-row">
+                <div>
+                    <div class="sit-avg-label">3-Month Average (Apr + May + Jun) ÷ 3</div>
+                    <div class="sit-avg-num">${sitFmt(avg)}</div>
+                    <div class="text-muted" style="font-size:11px;margin-top:4px;">
+                        ${sitFmt(grosses[0])} + ${sitFmt(grosses[1])} + ${sitFmt(grosses[2])} = ${sitFmt(grosses.reduce((a,b)=>a+b,0))}
+                    </div>
+                </div>
+                <span class="sit-badge ${statusClass}">${statusLabel}</span>
             </div>
-            <div class="si-summary">
-                <div class="si-summary-card">
-                    <div class="si-summary-label">標準報酬月額</div>
-                    <div class="si-summary-value accent">${siFormat(stdAmount)}</div>
+
+            <div class="sit-bar-wrap">
+                <div class="sit-bar-track">
+                    <div class="sit-bar-safe" style="width:${safeEdgePct}%"></div>
+                    ${ticks}
+                    <div class="sit-bar-marker" style="left:${avgPct}%">
+                        <div class="sit-bar-dot"></div>
+                        <div class="sit-bar-val">${sitFmt(Math.round(avg))}</div>
+                    </div>
                 </div>
-                <div class="si-summary-card">
-                    <div class="si-summary-label">月給 Salary</div>
-                    <div class="si-summary-value">${siFormat(salaryVal)}</div>
+                <div class="sit-bar-legend">
+                    <span><span class="sit-legend-safe"></span> Current bracket safe zone</span>
+                    <span class="text-muted" style="font-size:10px;">Brackets: ${SIT_BRACKETS.filter(b=>b.min>barMin&&b.min<barMax).map(b=>(b.min/1000).toFixed(0)+'k').join(' · ')}</span>
                 </div>
-                <div class="si-summary-card">
-                    <div class="si-summary-label">従業員控除合計 Deduction</div>
-                    <div class="si-summary-value warn">− ${siFormat(totalEmp)}</div>
+            </div>
+
+            <div class="sit-panels-2">
+                <div>
+                    <div class="panel-title" style="margin-bottom:.75rem;"><i data-lucide="clock"></i> OT Budget to Stay in Bracket</div>
+                    ${adjIdx.length === 0
+                        ? '<p class="text-muted" style="font-size:12px;">Switch at least one month to "From Hours" mode and uncheck Locked to see OT budgets.</p>'
+                        : `<div style="overflow-x:auto;"><table class="sit-table">
+                            <thead><tr><th>Target</th><th>Max Avg</th><th>Remaining OT Hours</th></tr></thead>
+                            <tbody>${budgetRows}</tbody>
+                        </table></div>`
+                    }
                 </div>
-                <div class="si-summary-card">
-                    <div class="si-summary-label">手取り推定 Est. Take-home</div>
-                    <div class="si-summary-value success">${siFormat(takehome)}</div>
+                <div>
+                    <div class="panel-title" style="margin-bottom:.75rem;"><i data-lucide="trending-up"></i> Bracket Impact (effective September)</div>
+                    <div style="overflow-x:auto;"><table class="sit-table">
+                        <thead><tr><th>標準報酬月額</th><th>Avg Range</th><th>Monthly Deduction</th><th>vs Current</th></tr></thead>
+                        <tbody>${impactRows}</tbody>
+                    </table></div>
                 </div>
             </div>
         `;
+        if (window.lucide) lucide.createIcons();
     }
 
     // 4. Salesforce Icon Converter

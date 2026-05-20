@@ -331,97 +331,154 @@
     <div id="social-insurance-view" class="tool-view view-hidden">
       <div class="view-header">
         <button class="back-btn" id="back-to-menu-btn-si"><i data-lucide="arrow-left"></i> Back</button>
-        <h2>社会保険料 — Social Insurance Bracket</h2>
+        <div>
+          <h2>算定基礎届 Bracket Tracker</h2>
+          <div class="brand-sub" style="margin-top:4px;">Teiki Kaitei — Annual Social Insurance Recalculation · April · May · June</div>
+        </div>
       </div>
+
       <div class="tool-body">
+
+        <!-- CONFIGURATION -->
         <div class="panel">
-          <div class="panel-title"><i data-lucide="calculator"></i> 入力 Input</div>
-          <div class="si-input-grid">
+          <div class="panel-title"><i data-lucide="sliders-horizontal"></i> 設定 Configuration</div>
+          <div class="sit-config">
             <div class="field">
-              <label for="si-salary">月給 Monthly Salary (¥)</label>
-              <input type="number" id="si-salary" placeholder="e.g. 300000" min="0" step="1000" style="width:100%;">
+              <label for="sit-base">Base Pay + Fixed Allowances (月額固定給)</label>
+              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-base" value="290000" min="0" step="1000"></div>
+              <div class="text-muted" style="font-size:11px;margin-top:4px;">¥230k base + ¥25k + ¥30k + fixed extras</div>
             </div>
             <div class="field">
-              <label for="si-prefecture">都道府県 Prefecture (協会けんぽ 2024)</label>
-              <select id="si-prefecture">
-                <option value="北海道">北海道 Hokkaido</option>
-                <option value="青森">青森 Aomori</option>
-                <option value="岩手">岩手 Iwate</option>
-                <option value="宮城">宮城 Miyagi</option>
-                <option value="秋田">秋田 Akita</option>
-                <option value="山形">山形 Yamagata</option>
-                <option value="福島">福島 Fukushima</option>
-                <option value="茨城">茨城 Ibaraki</option>
-                <option value="栃木">栃木 Tochigi</option>
-                <option value="群馬">群馬 Gunma</option>
-                <option value="埼玉">埼玉 Saitama</option>
-                <option value="千葉">千葉 Chiba</option>
-                <option value="東京" selected>東京 Tokyo</option>
-                <option value="神奈川">神奈川 Kanagawa</option>
-                <option value="新潟">新潟 Niigata</option>
-                <option value="富山">富山 Toyama</option>
-                <option value="石川">石川 Ishikawa</option>
-                <option value="福井">福井 Fukui</option>
-                <option value="山梨">山梨 Yamanashi</option>
-                <option value="長野">長野 Nagano</option>
-                <option value="岐阜">岐阜 Gifu</option>
-                <option value="静岡">静岡 Shizuoka</option>
-                <option value="愛知">愛知 Aichi</option>
-                <option value="三重">三重 Mie</option>
-                <option value="滋賀">滋賀 Shiga</option>
-                <option value="京都">京都 Kyoto</option>
-                <option value="大阪">大阪 Osaka</option>
-                <option value="兵庫">兵庫 Hyogo</option>
-                <option value="奈良">奈良 Nara</option>
-                <option value="和歌山">和歌山 Wakayama</option>
-                <option value="鳥取">鳥取 Tottori</option>
-                <option value="島根">島根 Shimane</option>
-                <option value="岡山">岡山 Okayama</option>
-                <option value="広島">広島 Hiroshima</option>
-                <option value="山口">山口 Yamaguchi</option>
-                <option value="徳島">徳島 Tokushima</option>
-                <option value="香川">香川 Kagawa</option>
-                <option value="愛媛">愛媛 Ehime</option>
-                <option value="高知">高知 Kochi</option>
-                <option value="福岡">福岡 Fukuoka</option>
-                <option value="佐賀">佐賀 Saga</option>
-                <option value="長崎">長崎 Nagasaki</option>
-                <option value="熊本">熊本 Kumamoto</option>
-                <option value="大分">大分 Oita</option>
-                <option value="宮崎">宮崎 Miyazaki</option>
-                <option value="鹿児島">鹿児島 Kagoshima</option>
-                <option value="沖縄">沖縄 Okinawa</option>
-              </select>
+              <label for="sit-ot-rate">Overtime Hourly Rate (残業単価)</label>
+              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-ot-rate" value="2500" min="0" step="100"></div>
+              <div class="text-muted" style="font-size:11px;margin-top:4px;">¥/hour × OT hours = OT pay</div>
             </div>
-          </div>
-          <div class="field" style="margin-top:0.75rem;">
-            <label>年齢区分 Age bracket</label>
-            <div class="btn-row">
-              <button class="badge-toggle active" id="si-age-under40">Under 40</button>
-              <button class="badge-toggle" id="si-age-40to64">40–64 (介護保険あり)</button>
-              <button class="badge-toggle" id="si-age-65plus">65+ (介護保険なし)</button>
+            <div class="field">
+              <label for="sit-current-bracket">Current 標準報酬月額 Bracket</label>
+              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-current-bracket" value="260000" min="58000" step="1000"></div>
+              <div class="text-muted" style="font-size:11px;margin-top:4px;">your bracket this year (prev Sep–Aug)</div>
             </div>
           </div>
         </div>
 
-        <div class="panel" id="si-result-panel">
-          <div class="panel-title"><i data-lucide="table-2"></i> 計算結果 Result</div>
-          <div id="si-result" class="si-placeholder">
-            <span class="text-muted">Enter a monthly salary above to see the breakdown.</span>
+        <!-- MONTH CARDS -->
+        <div class="sit-months">
+
+          <!-- April -->
+          <div class="panel sit-month sit-locked" id="sit-month-0">
+            <div class="sit-month-hd">
+              <div class="sit-month-label">April <span class="sit-kanji">4月</span></div>
+              <label class="sit-lock-label"><input type="checkbox" id="sit-locked-0" checked> Locked</label>
+            </div>
+            <div class="sit-mode-row">
+              <button class="sit-mode-btn active" data-month="0" data-mode="total">Total</button>
+              <button class="sit-mode-btn" data-month="0" data-mode="hours">From Hours</button>
+            </div>
+            <div id="sit-total-entry-0">
+              <div class="field" style="margin-bottom:0;">
+                <label>Gross Total 総支給額</label>
+                <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-gross-0" value="316124" step="1"></div>
+              </div>
+            </div>
+            <div id="sit-hours-entry-0" class="view-hidden">
+              <div class="field">
+                <label>Base + Fixed (auto)</label>
+                <div class="sit-yen-wrap"><span>¥</span><input class="sit-base-echo" type="number" readonly tabindex="-1"></div>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Overtime Hours</label>
+                <input type="number" id="sit-ot-0" class="sit-ot-input" value="0" min="0" step="0.5" placeholder="0">
+              </div>
+            </div>
+            <div class="sit-month-ft">
+              <span class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Gross</span>
+              <span class="sit-month-gross" id="sit-mg-0">¥316,124</span>
+            </div>
           </div>
+
+          <!-- May -->
+          <div class="panel sit-month sit-unlocked" id="sit-month-1">
+            <div class="sit-month-hd">
+              <div class="sit-month-label">May <span class="sit-kanji">5月</span></div>
+              <label class="sit-lock-label"><input type="checkbox" id="sit-locked-1"> Locked</label>
+            </div>
+            <div class="sit-mode-row">
+              <button class="sit-mode-btn active" data-month="1" data-mode="total">Total</button>
+              <button class="sit-mode-btn" data-month="1" data-mode="hours">From Hours</button>
+            </div>
+            <div id="sit-total-entry-1">
+              <div class="field" style="margin-bottom:0;">
+                <label>Gross Total 総支給額</label>
+                <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-gross-1" value="" step="1" placeholder="leave blank to use base"></div>
+              </div>
+            </div>
+            <div id="sit-hours-entry-1" class="view-hidden">
+              <div class="field">
+                <label>Base + Fixed (auto)</label>
+                <div class="sit-yen-wrap"><span>¥</span><input class="sit-base-echo" type="number" readonly tabindex="-1"></div>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Overtime Hours</label>
+                <input type="number" id="sit-ot-1" class="sit-ot-input" value="0" min="0" step="0.5" placeholder="0">
+              </div>
+            </div>
+            <div class="sit-month-ft">
+              <span class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Gross</span>
+              <span class="sit-month-gross" id="sit-mg-1">—</span>
+            </div>
+          </div>
+
+          <!-- June -->
+          <div class="panel sit-month sit-unlocked" id="sit-month-2">
+            <div class="sit-month-hd">
+              <div class="sit-month-label">June <span class="sit-kanji">6月</span></div>
+              <label class="sit-lock-label"><input type="checkbox" id="sit-locked-2"> Locked</label>
+            </div>
+            <div class="sit-mode-row">
+              <button class="sit-mode-btn active" data-month="2" data-mode="total">Total</button>
+              <button class="sit-mode-btn" data-month="2" data-mode="hours">From Hours</button>
+            </div>
+            <div id="sit-total-entry-2">
+              <div class="field" style="margin-bottom:0;">
+                <label>Gross Total 総支給額</label>
+                <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-gross-2" value="" step="1" placeholder="leave blank to use base"></div>
+              </div>
+            </div>
+            <div id="sit-hours-entry-2" class="view-hidden">
+              <div class="field">
+                <label>Base + Fixed (auto)</label>
+                <div class="sit-yen-wrap"><span>¥</span><input class="sit-base-echo" type="number" readonly tabindex="-1"></div>
+              </div>
+              <div class="field" style="margin-bottom:0;">
+                <label>Overtime Hours</label>
+                <input type="number" id="sit-ot-2" class="sit-ot-input" value="0" min="0" step="0.5" placeholder="0">
+              </div>
+            </div>
+            <div class="sit-month-ft">
+              <span class="text-muted" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;">Gross</span>
+              <span class="sit-month-gross" id="sit-mg-2">—</span>
+            </div>
+          </div>
+
         </div>
 
+        <!-- LIVE DASHBOARD -->
+        <div class="panel" id="sit-dashboard">
+          <div class="text-muted" style="padding:0.5rem 0;font-size:12px;">Fill in April–June gross totals above to see live calculations.</div>
+        </div>
+
+        <!-- NOTES -->
         <div class="panel">
-          <div class="panel-title"><i data-lucide="info"></i> Notes</div>
-          <p class="text-secondary" style="font-size:12px;line-height:1.7;">
-            Rates are from 協会けんぽ (Japan Health Insurance Association) fiscal year 2024 (April).
-            The 標準報酬月額 (standard monthly remuneration) is looked up from the official 50-grade table.
-            厚生年金 (Kosei Nenkin) is capped at ¥650,000.
-            介護保険 (care insurance, 1.60% total) applies to employees aged 40–64.
-            Employee and employer each bear half the total premium.
-            This calculator assumes 協会けんぽ membership — company-specific health insurance societies (健保組合) may differ.
+          <div class="panel-title"><i data-lucide="info"></i> 算定基礎届とは</div>
+          <p class="text-secondary" style="font-size:12px;line-height:1.8;">
+            <strong class="text-accent">算定基礎届 (Santei Kiso Todoke)</strong> is filed by employers in July. The April–June gross average determines
+            your new <strong>標準報酬月額</strong> (Standard Monthly Remuneration) bracket, effective <strong>September</strong> for 12 months.
+            Gross includes base pay, overtime, commuting, housing, and all allowances.
+            Deductions use 協会けんぽ Tokyo 2024 rates (健康保険 9.98% + 厚生年金 18.3%, employee bears half).
+            Blank month inputs default to Base + Fixed. Switch to "From Hours" mode and uncheck "Locked" to enable OT budget calculation.
           </p>
         </div>
+
       </div>
     </div>
 
