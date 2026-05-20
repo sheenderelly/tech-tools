@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const textToolsMenu = document.getElementById('text-tools-menu');
     const numberToolsMenu = document.getElementById('number-tools-menu');
     const jsonToolsMenu = document.getElementById('json-tools-menu');
-    
+    const salesforceToolsMenu = document.getElementById('salesforce-tools-menu');
     // Default starting menu
     let currentMenu = textToolsMenu;
 
@@ -71,12 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const jsonEditorCard = document.querySelector('[data-tool="json-editor"]');
     const jsonInput = document.getElementById('json-input');
     const jsonOutput = document.getElementById('json-output');
-    const jsonTable = document.getElementById('json-table');
-    const jsonVisualizerContainer = document.getElementById('json-visualizer-container');
     const btnVisualizeJson = document.getElementById('btn-visualize-json');
     const btnFormatJson = document.getElementById('btn-format-json');
+    const jsonVisualizerContainer = document.getElementById('json-visualizer-container');
+    const jsonTable = document.getElementById('json-table');
     const btnAddRow = document.getElementById('btn-add-row');
-    const btnCopyJson = document.getElementById('btn-copy-json');
 
     // Back Buttons
     const backBtns = document.querySelectorAll('.back-btn');
@@ -87,6 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
         hasHyphen: false,
         hasSpace: false
     };
+
+    // JSON state
+    let currentJsonData = null;
 
     /**
      * Navigation helper to show a specific view and hide all others
@@ -116,10 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentMenu = textToolsMenu;
             } else if (category === 'number') {
                 currentMenu = numberToolsMenu;
+            } else if (category === 'salesforce') {
+                currentMenu = salesforceToolsMenu;
             } else if (category === 'json') {
                 currentMenu = jsonToolsMenu;
             }
-            
+
             showView(currentMenu);
         });
     });
@@ -150,6 +154,16 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonEditorCard.addEventListener('click', () => {
             showView(jsonEditorView);
             if (jsonInput) jsonInput.focus();
+        });
+    }
+
+    // Salesforce: Create Icons
+    const createIconsCard = document.querySelector('[data-tool="create-icons"]');
+    const createIconsView = document.getElementById('create-icons-view');
+    if (createIconsCard) {
+        createIconsCard.addEventListener('click', () => {
+            showView(createIconsView);
+            initIconConverter();
         });
     }
 
@@ -275,59 +289,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 4. JSON Editor Tool
-    let currentJsonData = null;
-
-    if (btnFormatJson) {
-        btnFormatJson.addEventListener('click', () => {
-            try {
-                const text = jsonInput.value.trim();
-                if (!text) return;
-                jsonInput.value = JSON.stringify(JSON.parse(text), null, 4);
-            } catch (e) { alert('Invalid JSON format'); }
-        });
-    }
-
-    if (btnVisualizeJson) {
-        btnVisualizeJson.addEventListener('click', () => {
-            try {
-                const text = jsonInput.value.trim();
-                if (!text) return;
-                currentJsonData = JSON.parse(text);
-                renderJsonTable();
-                if (jsonVisualizerContainer) jsonVisualizerContainer.classList.remove('view-hidden');
-                updateJsonOutput();
-            } catch (e) { alert('Error parsing JSON: ' + e.message); }
-        });
-    }
-
-    function renderJsonTable() {
-        if (!jsonTable || !currentJsonData) return;
-        jsonTable.innerHTML = '';
-        let dataArray = Array.isArray(currentJsonData) ? currentJsonData : [currentJsonData];
-        if (dataArray.length === 0) {
-            jsonTable.innerHTML = '<tr><td>No data available</td></tr>';
-            return;
+    function updateJsonOutput() {
+        if (jsonOutput) {
+            jsonOutput.value = JSON.stringify(currentJsonData, null, 2);
         }
+    }
 
-        let keys = new Set();
-        dataArray.forEach(item => {
-            if (typeof item === 'object' && item !== null) Object.keys(item).forEach(k => keys.add(k));
-        });
-        const keyList = Array.from(keys);
-        
+    function renderJsonTable(data) {
+        if (!jsonTable) return;
+        jsonTable.innerHTML = ''; // Clear table
+        const dataArray = Array.isArray(data) ? data : [data];
+        if (dataArray.length === 0) return;
+
+        const keyList = Array.from(dataArray.reduce((keys, item) => {
+            Object.keys(item).forEach(key => keys.add(key));
+            return keys;
+        }, new Set()));
+
+        // Header
         const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
+        const trHead = document.createElement('tr');
         keyList.forEach(key => {
             const th = document.createElement('th');
             th.textContent = key;
-            headerRow.appendChild(th);
+            trHead.appendChild(th);
         });
-        const actionTh = document.createElement('th');
-        actionTh.textContent = '';
-        headerRow.appendChild(actionTh);
-        thead.appendChild(headerRow);
+        thead.appendChild(trHead);
         jsonTable.appendChild(thead);
 
+        // Body
         const tbody = document.createElement('tbody');
         dataArray.forEach((item, index) => {
             const tr = document.createElement('tr');
@@ -344,55 +334,289 @@ document.addEventListener('DOMContentLoaded', () => {
                 td.appendChild(input);
                 tr.appendChild(td);
             });
-
-            const actionTd = document.createElement('td');
-            if (Array.isArray(currentJsonData)) {
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'btn-remove-row';
-                removeBtn.innerHTML = '×';
-                removeBtn.addEventListener('click', () => {
-                    currentJsonData.splice(index, 1);
-                    renderJsonTable();
-                    updateJsonOutput();
-                });
-                actionTd.appendChild(removeBtn);
-            }
-            tr.appendChild(actionTd);
             tbody.appendChild(tr);
         });
         jsonTable.appendChild(tbody);
     }
 
-    if (btnAddRow) {
-        btnAddRow.addEventListener('click', () => {
-            if (!currentJsonData) currentJsonData = [{}];
-            else if (!Array.isArray(currentJsonData)) currentJsonData = [currentJsonData, {}];
-            else {
-                const newItem = {};
-                if (currentJsonData.length > 0) Object.keys(currentJsonData[0]).forEach(k => newItem[k] = "");
-                currentJsonData.push(newItem);
+    if (btnVisualizeJson) {
+        btnVisualizeJson.addEventListener('click', () => {
+            try {
+                currentJsonData = JSON.parse(jsonInput.value);
+                renderJsonTable(currentJsonData);
+                if (jsonVisualizerContainer) {
+                    jsonVisualizerContainer.classList.remove('view-hidden');
+                }
+                updateJsonOutput();
+            } catch (e) {
+                alert('Invalid JSON: ' + e.message);
             }
-            renderJsonTable();
-            updateJsonOutput();
         });
     }
 
-    function updateJsonOutput() {
-        if (currentJsonData && jsonOutput) {
-            jsonOutput.value = JSON.stringify(currentJsonData, null, 4);
+    if (btnFormatJson) {
+        btnFormatJson.addEventListener('click', () => {
+            try {
+                const parsed = JSON.parse(jsonInput.value);
+                jsonInput.value = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                alert('Invalid JSON: ' + e.message);
+            }
+        });
+    }
+
+    if (btnAddRow) {
+        btnAddRow.addEventListener('click', () => {
+            if (Array.isArray(currentJsonData)) {
+                const newRow = {};
+                if (currentJsonData.length > 0) Object.keys(currentJsonData[0]).forEach(k => newRow[k] = '');
+                currentJsonData.push(newRow);
+                renderJsonTable(currentJsonData);
+                updateJsonOutput();
+            }
+        });
+    }
+
+    // 4. Salesforce Icon Converter
+    let iconConverterReady = false;
+    let sfCurrentColor = '#0070D2';
+    let sfRenderTimer = null;
+    let sfFlatSize = 60;
+
+    const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0070D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <line x1="9" y1="13" x2="15" y2="13"/>
+  <line x1="9" y1="17" x2="15" y2="17"/>
+</svg>`;
+
+    function initIconConverter() {
+        if (iconConverterReady) return;
+        iconConverterReady = true;
+
+        const svgInput = document.getElementById('svgInput');
+        const hexInput = document.getElementById('hexInput');
+        const hexPreview = document.getElementById('hexPreview');
+        const iconName = document.getElementById('iconName');
+        const iconSize = document.getElementById('iconSize');
+
+        hexInput.value = sfCurrentColor;
+        hexPreview.style.background = sfCurrentColor;
+        sfFlatSize = clampIconSize(iconSize.value);
+
+        iconSize.addEventListener('input', () => {
+            sfFlatSize = clampIconSize(iconSize.value);
+            document.querySelectorAll('.sf-size-echo').forEach(el => { el.textContent = sfFlatSize; });
+            const flat = document.getElementById('canvasFlat');
+            flat.width = sfFlatSize;
+            flat.height = sfFlatSize;
+            updateIconSnippets();
+            renderAllIcons();
+        });
+
+        hexInput.addEventListener('input', (e) => {
+            let v = e.target.value.trim().toUpperCase();
+            if (v && !v.startsWith('#')) v = '#' + v;
+            if (/^#[0-9A-F]{6}$/.test(v)) {
+                sfCurrentColor = v;
+                hexPreview.style.background = v;
+                renderAllIcons();
+            }
+        });
+
+        svgInput.value = SAMPLE_SVG;
+        svgInput.addEventListener('input', () => {
+            clearTimeout(sfRenderTimer);
+            sfRenderTimer = setTimeout(renderAllIcons, 250);
+        });
+
+        iconName.addEventListener('input', updateIconSnippets);
+
+        document.getElementById('btn-render-icons').addEventListener('click', renderAllIcons);
+        document.getElementById('btn-download-all-icons').addEventListener('click', downloadAllIcons);
+        document.querySelectorAll('[data-download]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const canvasId = btn.dataset.download;
+                const suffix = canvasId === 'canvasFlat'
+                    ? `${sfFlatSize}x${sfFlatSize}`
+                    : btn.dataset.suffix;
+                downloadIconCanvas(canvasId, suffix);
+            });
+        });
+        document.querySelectorAll('[data-copy-target]').forEach(btn => {
+            btn.addEventListener('click', () => copySnippet(btn));
+        });
+
+        updateIconSnippets();
+        renderAllIcons();
+    }
+
+    function sanitizeIconName(raw) {
+        let name = (raw || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_');
+        if (!name || /^\d/.test(name)) name = 'my_icon';
+        return name;
+    }
+
+    function toCamel(snake) {
+        return snake.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
+    }
+
+    function updateIconSnippets() {
+        const raw = document.getElementById('iconName').value;
+        const name = sanitizeIconName(raw);
+        const camel = toCamel(name);
+        const constName = name.toUpperCase();
+        const size = sfFlatSize;
+
+        document.querySelectorAll('.sf-name-echo').forEach(el => { el.textContent = name; });
+        document.querySelectorAll('.sf-size-echo').forEach(el => { el.textContent = size; });
+
+        const snippets = {
+            'snippet-lwc-html':
+`<template>
+  <img src={iconUrl} alt="${name}" width="${size}" height="${size}" />
+</template>`,
+            'snippet-lwc-js':
+`import { LightningElement } from 'lwc';
+import ${constName} from '@salesforce/resourceUrl/${name}';
+
+export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends LightningElement {
+  iconUrl = ${constName};
+}`,
+            'snippet-vf':
+`<apex:image url="{!$Resource.${name}}" alt="${name}" width="${size}" height="${size}" />`,
+            'snippet-css':
+`.${name.replace(/_/g, '-')} {
+  background-image: url('/resource/${name}');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: ${size}px;
+  height: ${size}px;
+}`,
+            'snippet-slds':
+`<span class="slds-icon_container slds-icon-standard-custom" title="${name}">
+  <img src={iconUrl} alt="${name}" width="${size}" height="${size}" />
+  <span class="slds-assistive-text">${name}</span>
+</span>`,
+        };
+
+        Object.entries(snippets).forEach(([id, code]) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = code;
+        });
+    }
+
+    function copySnippet(btn) {
+        const target = document.getElementById(btn.dataset.copyTarget);
+        if (!target) return;
+        navigator.clipboard.writeText(target.textContent).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 1500);
+        });
+    }
+
+    function normalizeSvg(svgText) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgText, 'image/svg+xml');
+        const err = doc.querySelector('parsererror');
+        if (err) throw new Error('Invalid SVG: ' + err.textContent.split('\n')[0]);
+        const svg = doc.documentElement;
+        if (svg.tagName.toLowerCase() !== 'svg') throw new Error('Root element must be <svg>');
+        if (!svg.getAttribute('xmlns')) svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        if (!svg.hasAttribute('width') || !svg.hasAttribute('height')) {
+            if (svg.hasAttribute('viewBox')) {
+                const vb = svg.getAttribute('viewBox').split(/[\s,]+/);
+                if (vb.length === 4) {
+                    svg.setAttribute('width', vb[2]);
+                    svg.setAttribute('height', vb[3]);
+                }
+            } else {
+                svg.setAttribute('width', '24');
+                svg.setAttribute('height', '24');
+            }
+        }
+        return new XMLSerializer().serializeToString(svg);
+    }
+
+    function svgToImage(svgText) {
+        return new Promise((resolve, reject) => {
+            const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Failed to load SVG as image')); };
+            img.src = url;
+        });
+    }
+
+    function roundRectPath(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+    }
+
+    function renderLegacyIcon(canvasId, img, size) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(img, 0, 0, size, size);
+    }
+
+    function renderSldsIcon(canvasId, img, size, color) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+
+        const radius = Math.round(size * 0.15);
+        ctx.fillStyle = color;
+        roundRectPath(ctx, 0, 0, size, size, radius);
+        ctx.fill();
+
+        const glyphSize = Math.round(size * 0.60);
+        const glyphX = Math.round((size - glyphSize) / 2);
+        const glyphY = Math.round((size - glyphSize) / 2);
+
+        const off = document.createElement('canvas');
+        off.width = glyphSize;
+        off.height = glyphSize;
+        const offCtx = off.getContext('2d');
+        offCtx.drawImage(img, 0, 0, glyphSize, glyphSize);
+        offCtx.globalCompositeOperation = 'source-in';
+        offCtx.fillStyle = '#ffffff';
+        offCtx.fillRect(0, 0, glyphSize, glyphSize);
+
+        ctx.drawImage(off, glyphX, glyphY);
+    }
+
+    async function renderAllIcons() {
+        const errEl = document.getElementById('svgError');
+        if (!errEl) return;
+        errEl.style.display = 'none';
+        try {
+            const raw = document.getElementById('svgInput').value;
+            if (!raw.trim()) return;
+            const normalized = normalizeSvg(raw);
+            const img = await svgToImage(normalized);
+            const flat = document.getElementById('canvasFlat');
+            flat.width = sfFlatSize;
+            flat.height = sfFlatSize;
+            renderLegacyIcon('canvasFlat', img, sfFlatSize);
+            renderSldsIcon('canvasSlds', img, 480, sfCurrentColor);
+        } catch (e) {
+            errEl.textContent = e.message;
+            errEl.style.display = 'block';
         }
     }
 
-    if (btnCopyJson) {
-        btnCopyJson.addEventListener('click', () => {
-            if (jsonOutput && jsonOutput.value) {
-                navigator.clipboard.writeText(jsonOutput.value).then(() => {
-                    const originalText = btnCopyJson.textContent;
-                    btnCopyJson.textContent = 'Copied!';
-                    setTimeout(() => { btnCopyJson.textContent = originalText; }, 2000);
-                });
-            }
-        });
+    function clampIconSize(v) {
+        const n = parseInt(v, 10);
+        if (isNaN(n)) return 60;
+        return Math.max(16, Math.min(480, n));
     }
 
     // Lucide icons
@@ -415,4 +639,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const saved = localStorage.getItem('sheen-theme');
     if (saved) setTheme(saved);
+
+    function downloadAllIcons() {
+        downloadIconCanvas('canvasFlat', `${sfFlatSize}x${sfFlatSize}`);
+        setTimeout(() => downloadIconCanvas('canvasSlds', 'slds'), 150);
+    }
+
+    function downloadIconCanvas(canvasId, suffix) {
+        const canvas = document.getElementById(canvasId);
+        const name = (document.getElementById('iconName').value || 'icon').trim().replace(/\s+/g, '_');
+        canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}_${suffix}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    }
+
 });

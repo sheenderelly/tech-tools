@@ -141,3 +141,12 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Editor / agent internals
+.claude/
+.vscode/
+
+# Personal reference files (not part of the app)
+Tab Color Selector.html
+sf-icon-converter.html
+legacy-colors.json
