@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevTools — sheen.dev</title>
   <meta name="description" content="A simple collection of developer tools.">
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -290,13 +290,13 @@
           <div class="sit-config">
             <div class="field">
               <label for="sit-base">Base Pay + Fixed Allowances (月額固定給)</label>
-              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-base" value="290000" min="0" step="1000"></div>
-              <div class="text-muted" style="font-size:11px;margin-top:4px;">¥230k base + ¥25k + ¥30k + fixed extras</div>
+              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-base" value="285000" min="0" step="1000"></div>
+              <div class="text-muted" style="font-size:11px;margin-top:4px;">¥230k 基本給 + ¥25k 役職手当 + ¥30k 住宅手当</div>
             </div>
             <div class="field">
               <label for="sit-ot-rate">Overtime Hourly Rate (残業単価)</label>
-              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-ot-rate" value="2500" min="0" step="100"></div>
-              <div class="text-muted" style="font-size:11px;margin-top:4px;">¥/hour × OT hours = OT pay</div>
+              <div class="sit-yen-wrap"><span>¥</span><input type="number" id="sit-ot-rate" value="2224" min="0" step="1"></div>
+              <div class="text-muted" style="font-size:11px;margin-top:4px;">regular 残業手当 rate (¥25,142 ÷ 11.30h from Apr payslip)</div>
             </div>
             <div class="field">
               <label for="sit-current-bracket">Current 標準報酬月額 Bracket</label>
@@ -418,7 +418,8 @@
           <p class="text-secondary" style="font-size:12px;line-height:1.8;">
             <strong class="text-accent">算定基礎届 (Santei Kiso Todoke)</strong> is filed by employers in July. The April–June gross average determines
             your new <strong>標準報酬月額</strong> (Standard Monthly Remuneration) bracket, effective <strong>September</strong> for 12 months.
-            Gross includes base pay, overtime, commuting, housing, and all allowances.
+            Gross includes base pay, overtime, housing allowance, and all fixed allowances.
+            Commuting allowance (通勤手当) is included in 算定基礎 by law, but does not appear in the payslip gross — it is handled separately by the employer.
             Deductions use 協会けんぽ Tokyo 2024 rates (健康保険 9.98% + 厚生年金 18.3%, employee bears half).
             Blank month inputs default to Base + Fixed. Switch to "From Hours" mode and uncheck "Locked" to enable OT budget calculation.
           </p>
@@ -429,6 +430,6 @@
 
   </main>
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=8"></script>
 </body>
 </html>

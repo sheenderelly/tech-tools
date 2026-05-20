@@ -352,13 +352,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function sitSyncBase() {
-        const base = parseFloat(document.getElementById('sit-base')?.value) || 290000;
+        const base = parseFloat(document.getElementById('sit-base')?.value) || 285000;
         document.querySelectorAll('.sit-base-echo').forEach(el => { el.value = base; });
     }
 
     function sitGetGross(i) {
-        const base = parseFloat(document.getElementById('sit-base')?.value) || 290000;
-        const otRate = parseFloat(document.getElementById('sit-ot-rate')?.value) || 2500;
+        const base = parseFloat(document.getElementById('sit-base')?.value) || 285000;
+        const otRate = parseFloat(document.getElementById('sit-ot-rate')?.value) || 2224;
         if (sitModes[i] === 'hours') {
             const hours = parseFloat(document.getElementById(`sit-ot-${i}`)?.value) || 0;
             return base + hours * otRate;
@@ -373,8 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function sitUpdate() {
-        const base = parseFloat(document.getElementById('sit-base')?.value) || 290000;
-        const otRate = parseFloat(document.getElementById('sit-ot-rate')?.value) || 2500;
+        const base = parseFloat(document.getElementById('sit-base')?.value) || 285000;
+        const otRate = parseFloat(document.getElementById('sit-ot-rate')?.value) || 2224;
         const currentBracketAmt = parseFloat(document.getElementById('sit-current-bracket')?.value) || 260000;
 
         // Update month footer totals + locked styling
