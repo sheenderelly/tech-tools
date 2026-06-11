@@ -832,6 +832,14 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
     // 6. Themes View
     let themesReady = false;
 
+    const varMap = {
+        '--m-bg':        '--bg-main',
+        '--m-surface':   '--bg-card',
+        '--m-text':      '--text-primary',
+        '--m-secondary': '--text-secondary',
+        '--m-accent':    '--accent',
+    };
+
     const themePresets = {
         sheen: {
             dark:  { '--m-bg': '#1A1C18', '--m-surface': '#242821', '--m-text': '#F1F3EC', '--m-secondary': '#A9BA9D', '--m-accent': '#D4E157' },
@@ -846,6 +854,63 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
             light: { '--m-bg': '#F3F3F3', '--m-surface': '#FFFFFF', '--m-text': '#181818', '--m-secondary': '#706E6B', '--m-accent': '#0070D2' },
         },
     };
+
+    function getPickerValues(themeName) {
+        const page = document.getElementById('theme-page-' + themeName);
+        if (!page) return {};
+        const vals = {};
+        page.querySelectorAll('.color-picker-group input[type="color"]').forEach(p => {
+            vals[p.dataset.mockVar] = p.value.toUpperCase();
+        });
+        return vals;
+    }
+
+    function buildThemeCSS(themeName) {
+        const mode = getAppMode();
+        const otherMode = mode === 'dark' ? 'light' : 'dark';
+
+        const activeColors = getPickerValues(themeName);
+        const otherColors = themePresets[themeName]?.[otherMode] || {};
+
+        function colorBlock(colors) {
+            return Object.entries(colors).map(([mockVar, hex]) => {
+                const cssVar = varMap[mockVar] || mockVar;
+                return `    ${cssVar}: ${hex};`;
+            }).join('\n');
+        }
+
+        const darkColors  = mode === 'dark' ? activeColors : otherColors;
+        const lightColors = mode === 'light' ? activeColors : otherColors;
+
+        return `/* ===== ${themeName.charAt(0).toUpperCase() + themeName.slice(1)} Theme ===== */
+/* Generated from sheen.dev/tools */
+
+/* --- Shared Tokens --- */
+:root {
+    --font-family: 'Roboto Mono', monospace;
+    --radius-lg: 8px;
+    --radius-md: 6px;
+    --radius-sm: 4px;
+    --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --spacing-base: 1.5rem;
+    --spacing-tight: 1rem;
+}
+
+/* --- Dark Mode --- */
+:root[data-theme="dark"] {
+${colorBlock(darkColors)}
+}
+
+/* --- Light Mode --- */
+:root[data-theme="light"] {
+${colorBlock(lightColors)}
+}
+
+/* --- Font Import --- */
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap'); */
+`;
+    }
 
     function getAppMode() {
         return root.getAttribute('data-theme') || 'dark';
@@ -911,15 +976,7 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
         document.querySelectorAll('.btn-copy-theme').forEach(btn => {
             btn.addEventListener('click', () => {
                 const themeName = btn.dataset.theme;
-                const page = document.getElementById('theme-page-' + themeName);
-                if (!page) return;
-                const pickers = page.querySelectorAll('.color-picker-group input[type="color"]');
-                const vars = [];
-                pickers.forEach(p => {
-                    const label = p.parentElement.querySelector('label').textContent.toLowerCase();
-                    vars.push(`  --color-${label}: ${p.value.toUpperCase()};`);
-                });
-                const css = `:root {\n${vars.join('\n')}\n}`;
+                const css = buildThemeCSS(themeName);
                 navigator.clipboard.writeText(css).then(() => {
                     const orig = btn.textContent;
                     btn.textContent = 'Copied!';
