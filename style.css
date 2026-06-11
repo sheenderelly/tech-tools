@@ -57,7 +57,7 @@
 
 :root {
     --sidebar-width: 260px;
-    --font-family: 'Roboto Mono', monospace;
+    --font-family: 'Roboto Mono', 'Noto Sans Mono CJK JP', 'Source Han Code JP', monospace;
     --radius-lg: 8px;
     --radius-md: 6px;
     --radius-sm: 4px;
@@ -83,8 +83,10 @@ body {
     background-color: var(--bg-main);
     color: var(--text-primary);
     line-height: 1.6;
-    min-height: 100vh;
-    overflow-y: auto;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transition: var(--transition);
 }
 
@@ -204,6 +206,7 @@ blockquote {
 .app-header {
     background: var(--bg-card);
     border-bottom: 1px dashed var(--border);
+    flex-shrink: 0;
 }
 
 .app-header-inner {
@@ -244,8 +247,7 @@ blockquote {
 .tab-nav {
     background: var(--bg-card);
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
     z-index: 100;
 }
 
@@ -286,7 +288,8 @@ blockquote {
 /* ===== Main Content Area ===== */
 .main-content {
     background-color: var(--bg-main);
-    min-height: calc(100vh - 120px);
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* ===== Grid utility ===== */

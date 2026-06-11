@@ -886,7 +886,7 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
 
 /* --- Shared Tokens --- */
 :root {
-    --font-family: 'Roboto Mono', monospace;
+    --font-family: 'Roboto Mono', 'Noto Sans Mono CJK JP', 'Source Han Code JP', monospace;
     --radius-lg: 8px;
     --radius-md: 6px;
     --radius-sm: 4px;
