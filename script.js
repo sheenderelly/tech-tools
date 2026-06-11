@@ -794,6 +794,7 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
     const root = document.documentElement;
     const btnDark = document.getElementById('theme-dark');
     const btnLight = document.getElementById('theme-light');
+    let themesReady = false;
 
     function setTheme(mode) {
         root.setAttribute('data-theme', mode);
@@ -830,8 +831,6 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
     }
 
     // 6. Themes View
-    let themesReady = false;
-
     const varMap = {
         '--m-bg':        '--bg-main',
         '--m-surface':   '--bg-card',
