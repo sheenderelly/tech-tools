@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DOM Elements - Menus
     const textToolsMenu = document.getElementById('text-tools-menu');
-    const numberToolsMenu = document.getElementById('number-tools-menu');
     const salesforceToolsMenu = document.getElementById('salesforce-tools-menu');
     const nihonToolsMenu = document.getElementById('nihon-tools-menu');
+    const themesView = document.getElementById('themes-view');
     // Default starting menu
     let currentMenu = textToolsMenu;
 
@@ -103,12 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const category = item.dataset.category;
             if (category === 'text') {
                 currentMenu = textToolsMenu;
-            } else if (category === 'number') {
-                currentMenu = numberToolsMenu;
             } else if (category === 'salesforce') {
                 currentMenu = salesforceToolsMenu;
             } else if (category === 'nihon') {
                 currentMenu = nihonToolsMenu;
+            } else if (category === 'themes') {
+                currentMenu = themesView;
+                initThemes();
             }
 
             showView(currentMenu);
@@ -825,6 +826,75 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }, 'image/png');
+    }
+
+    // 6. Themes View
+    let themesReady = false;
+
+    function initThemes() {
+        if (themesReady) return;
+        themesReady = true;
+
+        const subnavItems = document.querySelectorAll('.themes-subnav-item');
+        const themePages = document.querySelectorAll('.theme-page');
+
+        subnavItems.forEach(item => {
+            item.addEventListener('click', () => {
+                subnavItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                const target = item.dataset.themePage;
+                themePages.forEach(page => {
+                    page.classList.remove('view-active');
+                    page.classList.add('view-hidden');
+                });
+                const targetPage = document.getElementById('theme-page-' + target);
+                if (targetPage) {
+                    targetPage.classList.remove('view-hidden');
+                    targetPage.classList.add('view-active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.color-picker-group input[type="color"]').forEach(picker => {
+            picker.addEventListener('input', (e) => {
+                const mockVar = e.target.dataset.mockVar;
+                const hex = e.target.value.toUpperCase();
+                const hexLabel = e.target.parentElement.querySelector('.hex-value');
+                if (hexLabel) hexLabel.textContent = hex;
+                const mockup = e.target.closest('.theme-page').querySelector('.theme-mockup');
+                if (mockup) mockup.style.setProperty(mockVar, hex);
+            });
+        });
+
+        document.querySelectorAll('.btn-copy-theme').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const themeName = btn.dataset.theme;
+                const page = document.getElementById('theme-page-' + themeName);
+                if (!page) return;
+                const pickers = page.querySelectorAll('.color-picker-group input[type="color"]');
+                const vars = [];
+                pickers.forEach(p => {
+                    const label = p.parentElement.querySelector('label').textContent.toLowerCase();
+                    vars.push(`  --color-${label}: ${p.value.toUpperCase()};`);
+                });
+                const css = `:root {\n${vars.join('\n')}\n}`;
+                navigator.clipboard.writeText(css).then(() => {
+                    const orig = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => { btn.textContent = orig; }, 2000);
+                });
+            });
+        });
+
+        themePages.forEach(page => {
+            const mockup = page.querySelector('.theme-mockup');
+            if (!mockup) return;
+            page.querySelectorAll('.color-picker-group input[type="color"]').forEach(picker => {
+                mockup.style.setProperty(picker.dataset.mockVar, picker.value);
+            });
+        });
+
+        if (window.lucide) lucide.createIcons();
     }
 
 });

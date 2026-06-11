@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevTools — sheen.dev</title>
   <meta name="description" content="A simple collection of developer tools.">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -37,19 +37,19 @@
   <!-- TAB NAV -->
   <nav class="tab-nav">
     <div class="tab-nav-inner">
-      <button class="tab-btn active" data-category="text">Aa&nbsp; TEXT</button>
-      <button class="tab-btn" data-category="number">#&nbsp; NUMBER</button>
+      <button class="tab-btn active" data-category="text">*&nbsp; GENERAL</button>
       <button class="tab-btn" data-category="salesforce">SF&nbsp; SALESFORCE</button>
       <button class="tab-btn" data-category="nihon">日本</button>
+      <button class="tab-btn" data-category="themes"><i data-lucide="palette" style="width:14px;height:14px;display:inline;vertical-align:-2px;"></i>&nbsp; THEMES</button>
     </div>
   </nav>
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
 
-    <!-- Text Tools Menu -->
+    <!-- General Tools Menu -->
     <div id="text-tools-menu" class="tools-menu view-active">
-      <h2>Text Tools</h2>
+      <h2>General Tools</h2>
       <div class="tools-grid">
         <div class="panel tool-card" data-tool="change-case">
           <div class="tool-icon">Aa</div>
@@ -65,13 +65,6 @@
             <p>Convert English letters and numbers to full-width or half-width.</p>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Number Tools Menu -->
-    <div id="number-tools-menu" class="tools-menu view-hidden">
-      <h2>Number Tools</h2>
-      <div class="tools-grid">
         <div class="panel tool-card" data-tool="phone-formatter">
           <div class="tool-icon">☎</div>
           <div class="tool-details">
@@ -428,8 +421,132 @@
       </div>
     </div>
 
+    <!-- Themes View -->
+    <div id="themes-view" class="tools-menu view-hidden" style="padding-top: 24px;">
+      <div class="themes-layout">
+        <div class="themes-subnav">
+          <div class="themes-subnav-header">Themes</div>
+          <div class="themes-subnav-item active" data-theme-page="sheen">
+            <i data-lucide="leaf"></i><span>Sheen</span>
+          </div>
+          <div class="themes-subnav-item" data-theme-page="synchron">
+            <i data-lucide="zap"></i><span>Synchron</span>
+          </div>
+          <div class="themes-subnav-item" data-theme-page="salesforce">
+            <i data-lucide="cloud"></i><span>Salesforce</span>
+          </div>
+        </div>
+        <div class="themes-content">
+          <!-- Sheen Theme Page -->
+          <div class="theme-page view-active" id="theme-page-sheen">
+            <div class="color-pickers-bar">
+              <div class="color-picker-group"><label>Background</label><input type="color" value="#1a1c18" data-mock-var="--m-bg"><span class="hex-value">#1A1C18</span></div>
+              <div class="color-picker-group"><label>Surface</label><input type="color" value="#242821" data-mock-var="--m-surface"><span class="hex-value">#242821</span></div>
+              <div class="color-picker-group"><label>Text</label><input type="color" value="#f1f3ec" data-mock-var="--m-text"><span class="hex-value">#F1F3EC</span></div>
+              <div class="color-picker-group"><label>Secondary</label><input type="color" value="#a9ba9d" data-mock-var="--m-secondary"><span class="hex-value">#A9BA9D</span></div>
+              <div class="color-picker-group"><label>Accent</label><input type="color" value="#d4e157" data-mock-var="--m-accent"><span class="hex-value">#D4E157</span></div>
+            </div>
+            <div class="theme-mockup" id="mockup-sheen">
+              <div class="mock-sidebar">
+                <div class="mock-sidebar-header"><div class="mock-brand-icon"></div><div class="mock-brand-text"></div></div>
+                <div class="mock-nav-section">
+                  <div class="mock-nav-label">Tools</div>
+                  <div class="mock-nav-item active"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:50px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:65px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:80px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:45px"></div></div>
+                </div>
+              </div>
+              <div class="mock-main">
+                <div class="mock-page-title"></div>
+                <div class="mock-cards-grid">
+                  <div class="mock-card"><div class="mock-card-icon"><div class="mock-card-icon-inner"></div></div><div class="mock-card-lines"><div class="mock-card-line"></div><div class="mock-card-line"></div></div></div>
+                  <div class="mock-card"><div class="mock-card-icon"><div class="mock-card-icon-inner"></div></div><div class="mock-card-lines"><div class="mock-card-line"></div><div class="mock-card-line"></div></div></div>
+                </div>
+                <div class="mock-tool-area">
+                  <div class="mock-btn-row"><div class="mock-btn"></div><div class="mock-btn secondary"></div><div class="mock-btn secondary"></div></div>
+                  <div class="mock-textarea"><div class="mock-text-line"></div><div class="mock-text-line"></div><div class="mock-text-line"></div><div class="mock-text-line"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="theme-export-bar"><span class="css-preview">CSS variables ready to copy</span><button class="btn btn-primary btn-copy-theme" data-theme="sheen">Copy CSS</button></div>
+          </div>
+
+          <!-- Synchron Theme Page -->
+          <div class="theme-page view-hidden" id="theme-page-synchron">
+            <div class="color-pickers-bar">
+              <div class="color-picker-group"><label>Background</label><input type="color" value="#0f1117" data-mock-var="--m-bg"><span class="hex-value">#0F1117</span></div>
+              <div class="color-picker-group"><label>Surface</label><input type="color" value="#1a1d28" data-mock-var="--m-surface"><span class="hex-value">#1A1D28</span></div>
+              <div class="color-picker-group"><label>Text</label><input type="color" value="#e4e8f1" data-mock-var="--m-text"><span class="hex-value">#E4E8F1</span></div>
+              <div class="color-picker-group"><label>Secondary</label><input type="color" value="#8892a8" data-mock-var="--m-secondary"><span class="hex-value">#8892A8</span></div>
+              <div class="color-picker-group"><label>Accent</label><input type="color" value="#6c9fff" data-mock-var="--m-accent"><span class="hex-value">#6C9FFF</span></div>
+            </div>
+            <div class="theme-mockup" id="mockup-synchron">
+              <div class="mock-sidebar">
+                <div class="mock-sidebar-header"><div class="mock-brand-icon"></div><div class="mock-brand-text"></div></div>
+                <div class="mock-nav-section">
+                  <div class="mock-nav-label">Tools</div>
+                  <div class="mock-nav-item active"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:50px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:65px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:80px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:45px"></div></div>
+                </div>
+              </div>
+              <div class="mock-main">
+                <div class="mock-page-title"></div>
+                <div class="mock-cards-grid">
+                  <div class="mock-card"><div class="mock-card-icon"><div class="mock-card-icon-inner"></div></div><div class="mock-card-lines"><div class="mock-card-line"></div><div class="mock-card-line"></div></div></div>
+                  <div class="mock-card"><div class="mock-card-icon"><div class="mock-card-icon-inner"></div></div><div class="mock-card-lines"><div class="mock-card-line"></div><div class="mock-card-line"></div></div></div>
+                </div>
+                <div class="mock-tool-area">
+                  <div class="mock-btn-row"><div class="mock-btn"></div><div class="mock-btn secondary"></div><div class="mock-btn secondary"></div></div>
+                  <div class="mock-textarea"><div class="mock-text-line"></div><div class="mock-text-line"></div><div class="mock-text-line"></div><div class="mock-text-line"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="theme-export-bar"><span class="css-preview">CSS variables ready to copy</span><button class="btn btn-primary btn-copy-theme" data-theme="synchron">Copy CSS</button></div>
+          </div>
+
+          <!-- Salesforce Theme Page -->
+          <div class="theme-page view-hidden" id="theme-page-salesforce">
+            <div class="color-pickers-bar">
+              <div class="color-picker-group"><label>Background</label><input type="color" value="#f3f3f3" data-mock-var="--m-bg"><span class="hex-value">#F3F3F3</span></div>
+              <div class="color-picker-group"><label>Surface</label><input type="color" value="#ffffff" data-mock-var="--m-surface"><span class="hex-value">#FFFFFF</span></div>
+              <div class="color-picker-group"><label>Text</label><input type="color" value="#181818" data-mock-var="--m-text"><span class="hex-value">#181818</span></div>
+              <div class="color-picker-group"><label>Secondary</label><input type="color" value="#706e6b" data-mock-var="--m-secondary"><span class="hex-value">#706E6B</span></div>
+              <div class="color-picker-group"><label>Accent</label><input type="color" value="#0070d2" data-mock-var="--m-accent"><span class="hex-value">#0070D2</span></div>
+            </div>
+            <div class="theme-mockup" id="mockup-salesforce">
+              <div class="mock-sidebar">
+                <div class="mock-sidebar-header"><div class="mock-brand-icon"></div><div class="mock-brand-text"></div></div>
+                <div class="mock-nav-section">
+                  <div class="mock-nav-label">Tools</div>
+                  <div class="mock-nav-item active"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:50px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:65px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:80px"></div></div>
+                  <div class="mock-nav-item"><div class="mock-nav-icon"></div><div class="mock-nav-text" style="width:45px"></div></div>
+                </div>
+              </div>
+              <div class="mock-main">
+                <div class="mock-page-title"></div>
+                <div class="mock-cards-grid">
+                  <div class="mock-card"><div class="mock-card-icon"><div class="mock-card-icon-inner"></div></div><div class="mock-card-lines"><div class="mock-card-line"></div><div class="mock-card-line"></div></div></div>
+                  <div class="mock-card"><div class="mock-card-icon"><div class="mock-card-icon-inner"></div></div><div class="mock-card-lines"><div class="mock-card-line"></div><div class="mock-card-line"></div></div></div>
+                </div>
+                <div class="mock-tool-area">
+                  <div class="mock-btn-row"><div class="mock-btn"></div><div class="mock-btn secondary"></div><div class="mock-btn secondary"></div></div>
+                  <div class="mock-textarea"><div class="mock-text-line"></div><div class="mock-text-line"></div><div class="mock-text-line"></div><div class="mock-text-line"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="theme-export-bar"><span class="css-preview">CSS variables ready to copy</span><button class="btn btn-primary btn-copy-theme" data-theme="salesforce">Copy CSS</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
-  <script src="script.js?v=8"></script>
+  <script src="script.js?v=9"></script>
 </body>
 </html>
