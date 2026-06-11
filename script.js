@@ -800,6 +800,7 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
         btnDark.classList.toggle('active', mode === 'dark');
         btnLight.classList.toggle('active', mode === 'light');
         localStorage.setItem('sheen-theme', mode);
+        if (themesReady) syncAllThemePresets();
     }
 
     if(btnDark) btnDark.addEventListener('click', () => setTheme('dark'));
@@ -830,6 +831,47 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
 
     // 6. Themes View
     let themesReady = false;
+
+    const themePresets = {
+        sheen: {
+            dark:  { '--m-bg': '#1A1C18', '--m-surface': '#242821', '--m-text': '#F1F3EC', '--m-secondary': '#A9BA9D', '--m-accent': '#D4E157' },
+            light: { '--m-bg': '#F7F5EC', '--m-surface': '#FFFFFF', '--m-text': '#1A1C18', '--m-secondary': '#4A5441', '--m-accent': '#6B8E23' },
+        },
+        synchron: {
+            dark:  { '--m-bg': '#0F1117', '--m-surface': '#1A1D28', '--m-text': '#E4E8F1', '--m-secondary': '#8892A8', '--m-accent': '#6C9FFF' },
+            light: { '--m-bg': '#F0F2F8', '--m-surface': '#FFFFFF', '--m-text': '#1A1D28', '--m-secondary': '#5A6478', '--m-accent': '#2563EB' },
+        },
+        salesforce: {
+            dark:  { '--m-bg': '#1B2431', '--m-surface': '#22334A', '--m-text': '#E8ECF1', '--m-secondary': '#8B99A8', '--m-accent': '#0070D2' },
+            light: { '--m-bg': '#F3F3F3', '--m-surface': '#FFFFFF', '--m-text': '#181818', '--m-secondary': '#706E6B', '--m-accent': '#0070D2' },
+        },
+    };
+
+    function getAppMode() {
+        return root.getAttribute('data-theme') || 'dark';
+    }
+
+    function applyThemePreset(themeName, mode) {
+        const preset = themePresets[themeName]?.[mode];
+        if (!preset) return;
+        const page = document.getElementById('theme-page-' + themeName);
+        if (!page) return;
+        const mockup = page.querySelector('.theme-mockup');
+        page.querySelectorAll('.color-picker-group input[type="color"]').forEach(picker => {
+            const cssVar = picker.dataset.mockVar;
+            if (preset[cssVar]) {
+                picker.value = preset[cssVar].toLowerCase();
+                const hexLabel = picker.parentElement.querySelector('.hex-value');
+                if (hexLabel) hexLabel.textContent = preset[cssVar];
+                if (mockup) mockup.style.setProperty(cssVar, preset[cssVar]);
+            }
+        });
+    }
+
+    function syncAllThemePresets() {
+        const mode = getAppMode();
+        Object.keys(themePresets).forEach(name => applyThemePreset(name, mode));
+    }
 
     function initThemes() {
         if (themesReady) return;
@@ -886,14 +928,7 @@ export default class ${camel.charAt(0).toUpperCase() + camel.slice(1)} extends L
             });
         });
 
-        themePages.forEach(page => {
-            const mockup = page.querySelector('.theme-mockup');
-            if (!mockup) return;
-            page.querySelectorAll('.color-picker-group input[type="color"]').forEach(picker => {
-                mockup.style.setProperty(picker.dataset.mockVar, picker.value);
-            });
-        });
-
+        syncAllThemePresets();
         if (window.lucide) lucide.createIcons();
     }
 
