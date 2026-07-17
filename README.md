@@ -14,7 +14,7 @@ HTML5, vanilla JS, vanilla CSS (custom properties, grid, flex). Inter from Googl
 
 ## Live demo
 
-<https://sheenderelly.github.io/tech-tools/>
+<https://sheenderelly.github.io/ck/>
 
 ## Local development
 
